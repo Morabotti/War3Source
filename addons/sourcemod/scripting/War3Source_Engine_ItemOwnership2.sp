@@ -25,7 +25,7 @@ public Plugin:myinfo=
 public OnPluginStart()
 {
   //hitemRestrictionCvar2=CreateConVar("war3_item2_restrict","","Disallow items in shopmenu, shortname separated by comma only ie:'claw,orb'");
-  hCvarMaxShopitems2=CreateConVar("war3_max_shopitems2","2","max shop2 items a player can hold");
+  hCvarMaxShopitems2=CreateConVar("war3_max_shopitems2","1","max shop2 items a player can hold");
 }
 
 public bool:InitNativesForwards()
@@ -139,7 +139,7 @@ public NW3SetItem2ExpireTime(Handle:plugin,numParams)
 public OnWar3Event(W3EVENT:event,client){
   if(event==DoForwardClientBoughtItem2){
     new itemid=W3GetVar(TheItemBoughtOrLost);
-    War3_SetOwnsItem2(client,itemid,true);
+    War3_SetOwnsItem2(client,itemid,false);
     
     Call_StartForward(g_OnItemPurchaseHandle); 
     Call_PushCell(client);

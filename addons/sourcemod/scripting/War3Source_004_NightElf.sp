@@ -31,33 +31,33 @@ public Plugin:myinfo =
 new ClientTracer;
 new BeamSprite, HaloSprite;
 new bool:bIsEntangled[MAXPLAYERSCUSTOM];
-new String:entangleSound[256];
+new String:entangleSound[] = "*mora-wcs/war3source/entanglingrootsdecay1.mp3";
+new String:entangleSound_FullPath[] = "sound/mora-wcs/war3source/entanglingrootsdecay1.mp3";
 new Handle:EntangleCooldownCvar;
 
 new SKILL_EVADE, SKILL_THORNS, SKILL_TRUESHOT, ULT_ENTANGLE;
 
 // Chance/Data Arrays
-new Float:fEvadeChance[5] = {0.0, 0.05, 0.07, 0.13, 0.15};
-new Float:ThornsReturnDamage[5] = {0.0, 0.05, 0.09, 0.13, 0.17};
-new Float:TrueshotDamagePercent[5] = {1.0, 1.05, 1.09, 1.13, 1.17};
+new Float:fEvadeChance[9] = {0.0, 0.05, 0.07, 0.10, 0.13, 0.16, 0.20, 0.22, 0.25};
+new Float:ThornsReturnDamage[9] = {0.0, 0.05, 0.09, 0.12, 0.15, 0.18, 0.20, 0.22, 0.25};
+new Float:TrueshotDamagePercent[9] = {1.0, 1.03, 1.06, 1.09, 1.12, 1.15, 1.18, 1.20, 1.22};
 new Float:EntangleDistance = 600.0;
-new Float:EntangleDuration[5] = {0.0, 1.25, 1.5, 1.75, 2.0};
+new Float:EntangleDuration[9] = {0.0, 1.20, 1.35, 1.55, 1.70, 1.90, 2.00, 2.20, 2.35};
 
 public OnPluginStart()
 {
-    EntangleCooldownCvar=CreateConVar("war3_nightelf_entangle_cooldown", "20", "Cooldown timer.");
+    EntangleCooldownCvar=CreateConVar("war3_nightelf_entangle_cooldown", "14", "Cooldown timer.");
 
     LoadTranslations("w3s.race.nightelf.phrases.txt");
 }
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(entangleSound, sizeof(entangleSound), "entanglingrootsdecay1.mp3");
-
+    AddFileToDownloadsTable(entangleSound_FullPath);
+    PrecacheSoundAny(entangleSound);
+	
     BeamSprite = War3_PrecacheBeamSprite();
     HaloSprite = War3_PrecacheHaloSprite();
-
-    War3_AddCustomSound(entangleSound);
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -65,13 +65,13 @@ public OnWar3LoadRaceOrItemOrdered(num)
     if(num == 40)
     {
         thisRaceID = War3_CreateNewRaceT("nightelf");
-        SKILL_EVADE = War3_AddRaceSkillT(thisRaceID, "Evasion", false, 4);
-        SKILL_THORNS = War3_AddRaceSkillT(thisRaceID, "ThornsAura", false, 4);
-        SKILL_TRUESHOT = War3_AddRaceSkillT(thisRaceID, "TrueshotAura", false, 4);
-        ULT_ENTANGLE = War3_AddRaceSkillT(thisRaceID, "EntanglingRoots", true, 4);
-        
+        SKILL_EVADE = War3_AddRaceSkillT(thisRaceID, "Evasion", false, 8);
+        SKILL_THORNS = War3_AddRaceSkillT(thisRaceID, "ThornsAura", false, 8);
+        SKILL_TRUESHOT = War3_AddRaceSkillT(thisRaceID, "TrueshotAura", false, 8);
+        ULT_ENTANGLE = War3_AddRaceSkillT(thisRaceID, "EntanglingRoots", true, 8);
+
         War3_CreateRaceEnd(thisRaceID);
-        
+
         War3_AddSkillBuff(thisRaceID, SKILL_EVADE, fDodgeChance, fEvadeChance);
     }
 }
@@ -92,7 +92,7 @@ public bool:ImmunityCheck(client)
     {
         return false;
     }
-    
+
     return true;
 }
 
@@ -126,7 +126,7 @@ public OnUltimateCommand(client,race,bool:pressed)
                     CreateTimer(fEntangleTime, StopEntangle, target);
                     new Float:fEffectPos[3];
                     GetClientAbsOrigin(target, fEffectPos);
-                    
+
                     for (new i=0; i <= 3; i++)
                     {
                         fEffectPos[2] += 15.0;
@@ -138,15 +138,15 @@ public OnUltimateCommand(client,race,bool:pressed)
 
                     fClientPos[2] += 25.0;
                     TE_SetupBeamPoints(fClientPos, fEffectPos, BeamSprite,
-                                       HaloSprite, 0, 50, 4.0, 6.0, 25.0, 0, 
+                                       HaloSprite, 0, 50, 3.0, 6.0, 25.0, 0,
                                        12.0, {80, 255, 90, 255}, 40);
                     TE_SendToAll();
-                    
-                    W3EmitSoundToAll(entangleSound, target);
-                    W3EmitSoundToAll(entangleSound, target);
+
+                    EmitSoundToAllAny(entangleSound, target);
+                    EmitSoundToAllAny(entangleSound, target);
 
                     W3MsgEntangle(target, client);
-
+                    W3FlashScreen(target, RGBA_COLOR_GREEN);
                     War3_CooldownMGR(client, GetConVarFloat(EntangleCooldownCvar), thisRaceID, ULT_ENTANGLE, _, _);
                 }
                 else
@@ -184,6 +184,21 @@ public OnWar3EventSpawn(client)
     {
         Untangle(client);
     }
+
+    new currRace = War3_GetRace( client );
+    if( currRace == thisRaceID )
+    {
+      decl Float:spawn_pos[3];
+      GetClientAbsOrigin(client, spawn_pos);
+      for (new i=0; i <= 3; i++)
+      {
+          spawn_pos[2] += 15.0;
+          TE_SetupBeamRingPoint(spawn_pos, 45.0, 44.0, BeamSprite,
+                                HaloSprite, 0, 15, 3.0,
+                                5.0, 0.0, {0, 255, 0, 255}, 10, 0);
+          TE_SendToAll();
+      }
+    }
 }
 
 public OnW3TakeDmgBulletPre(victim, attacker, Float:damage)
@@ -203,7 +218,7 @@ public OnW3TakeDmgBulletPre(victim, attacker, Float:damage)
             {
                 return;
             }
-            
+
             new iTrueshotLevel = War3_GetSkillLevel(attacker, thisRaceID, SKILL_TRUESHOT);
             if(iTrueshotLevel > 0 && !Hexed(attacker, false) && !W3HasImmunity(victim, Immunity_Skills))
             {
@@ -231,7 +246,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
             {
                 return;
             }
-            
+
             if(!W3HasImmunity(attacker, Immunity_Skills))
             {
                 new iDamage = RoundToFloor(damage * ThornsReturnDamage[iThornsLevel]);

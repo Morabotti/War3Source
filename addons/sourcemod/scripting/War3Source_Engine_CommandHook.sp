@@ -187,7 +187,7 @@ public Action:War3Source_SayCommand(client,args)
     }
     return returnblocking;
   }
-  else if(CommandCheck(arg1,"war3help")||CommandCheck(arg1,"help")||CommandCheck(arg1,"wchelp"))
+  else if(CommandCheck(arg1,"wcshelp")||CommandCheck(arg1,"help")||CommandCheck(arg1,"wchelp")||CommandCheck(arg1,"wcscommands"))
   {
     W3CreateEvent(DoShowHelpMenu,client);
     return returnblocking;
@@ -203,12 +203,12 @@ public Action:War3Source_SayCommand(client,args)
     }
     return returnblocking;
   }
-  else if(CommandCheck(arg1,"itemsinfo")||CommandCheck(arg1,"iteminfo"))
+  else if(CommandCheck(arg1,"iteminfo")||CommandCheck(arg1,"shopinfo")||CommandCheck(arg1,"shopmenuinfo")||CommandCheck(arg1,"itemsinfo"))
   {
     W3CreateEvent(DoShowItemsInfoMenu,client);
     return returnblocking;
   }
-  else if(CommandCheck(arg1,"itemsinfo2")||CommandCheck(arg1,"iteminfo2"))
+  else if(CommandCheck(arg1,"iteminfo2")||CommandCheck(arg1,"shopinfo2")||CommandCheck(arg1,"shopmenu2info")||CommandCheck(arg1,"itemsinfo2"))
   {
     W3CreateEvent(DoShowItems2InfoMenu,client);
     return returnblocking;
@@ -223,7 +223,7 @@ public Action:War3Source_SayCommand(client,args)
     CloseHandle(array);
     return returnblocking;
   }
-  else if(CommandCheck(arg1,"raceinfo"))
+  else if(CommandCheck(arg1,"raceinfo")||CommandCheck(arg1,"changeraceinfo")||CommandCheck(arg1,"crinfo"))
   {
     W3CreateEvent(DoShowRaceinfoMenu,client);
     return returnblocking;
@@ -250,7 +250,7 @@ public Action:War3Source_SayCommand(client,args)
         }
       }
     }
-    new Float:currentmaxspeed=GetEntDataFloat(ClientX,War3_GetGame()==Game_TF?FindSendPropInfo("CTFPlayer","m_flMaxspeed"):FindSendPropInfo("CBasePlayer","m_flLaggedMovementValue"));
+    new Float:currentmaxspeed=GetEntDataFloat(ClientX,War3_GetGame()==Game_TF?FindSendPropOffs("CTFPlayer","m_flMaxspeed"):FindSendPropOffs("CBasePlayer","m_flLaggedMovementValue"));
     if(GameTF())
     {
       if(SpecTarget==true)
@@ -281,7 +281,7 @@ public Action:War3Source_SayCommand(client,args)
   }
   if(War3_GetRace(client)>0)
   {
-    if(CommandCheck(arg1,"skillsinfo")||CommandCheck(arg1,"skl"))
+    if(CommandCheck(arg1,"showskills") || CommandCheck(arg1,"skillsinfo"))
     {
       W3ShowSkillsInfo(client);
       return returnblocking;
@@ -310,17 +310,17 @@ public Action:War3Source_SayCommand(client,args)
       W3CreateEvent(DoShowShopMenu2,client);
       return returnblocking;
     }
-    else if(CommandCheck(arg1,"war3menu")||CommandCheck(arg1,"w3s")||CommandCheck(arg1,"wcs"))
+    else if(CommandCheck(arg1,"wcsmenu")||CommandCheck(arg1,"wcs")||CommandCheck(arg1,"warcraft")||CommandCheck(arg1,"wc3")||CommandCheck(arg1,"warcraftmenu"))
     {
       W3CreateEvent(DoShowWar3Menu,client);
       return returnblocking;
     }
-    else if(CommandCheck(arg1,"levelbank"))
+    else if(CommandCheck(arg1,"levelbank")||CommandCheck(arg1,"lvlbank"))
     {
       W3CreateEvent(DoShowLevelBank,client);
       return returnblocking;
     }
-    else if(CommandCheck(arg1,"war3rank"))
+    else if(CommandCheck(arg1,"wcsrank")||CommandCheck(arg1,"rank"))
     {
       if(W3SaveEnabled())
       {
@@ -332,12 +332,12 @@ public Action:War3Source_SayCommand(client,args)
       }
       return returnblocking;
     }
-    else if(CommandCheck(arg1,"war3stats"))
+    else if(CommandCheck(arg1,"wcsstats"))
     {
       W3CreateEvent(DoShowWar3Stats,client);
       return returnblocking;
     }
-    else if(CommandCheck(arg1,"war3dev"))
+    else if(CommandCheck(arg1,"wcsdev"))
     {
       War3_ChatMessage(client,"%T","War3Source Developers",client);
       return returnblocking;
@@ -359,7 +359,7 @@ public Action:War3Source_SayCommand(client,args)
       W3CreateEvent(DoShowPlayerItemsOwnTarget,client);
       return returnblocking;
     }
-    else if((top_num=CommandCheckEx(arg1,"war3top"))>0)
+    else if((top_num=CommandCheckEx(arg1,"wcstop"))>0)
     {
       if(top_num>100) top_num=100;
       if(W3SaveEnabled())
@@ -375,29 +375,51 @@ public Action:War3Source_SayCommand(client,args)
     }
     new String:itemshort[100];
     new ItemsLoaded = W3GetItemsLoaded();
-    for(new itemid=1;itemid<=ItemsLoaded;itemid++) {
-      W3GetItemShortname(itemid,itemshort,sizeof(itemshort));
-      if(CommandCheckStartsWith(arg1,itemshort)&&!W3ItemHasFlag(itemid,"hidden")) {
-        W3SetVar(EventArg1,itemid);
-        W3SetVar(EventArg2,false); //dont show menu again
-        if(CommandCheckStartsWith(arg1,"tome")) {//item is tome
-          new multibuy;
-          if( (multibuy=CommandCheckEx(arg1,"tomes"))>0 || (multibuy=CommandCheckEx(arg1,"tome"))>0 )
-          {
-            //            PrintToChatAll("passed commandx");
-            if(multibuy>10) multibuy=10;
-            for(new i=1;i<multibuy;i++) { //doesnt itterate if its 1
-              W3CreateEvent(DoTriedToBuyItem,client);
-            }
-          }
-          else {
-            War3_ChatMessage(client,"%T","say tomes5 to buy many tomes at once, up to 10",client);
-          }
-        }
-        W3CreateEvent(DoTriedToBuyItem,client);
-        return returnblocking;
-      }
-    }
+	for(new itemid=1;itemid<=ItemsLoaded;itemid++) 
+	{
+		W3GetItemShortname(itemid,itemshort,sizeof(itemshort));
+		if(CommandCheckStartsWith(arg1,itemshort)&&!W3ItemHasFlag(itemid,"hidden")) 
+		{
+		    W3SetVar(EventArg1,itemid);
+		    W3SetVar(EventArg2,false); //dont show menu again
+		    if(CommandCheckStartsWith(arg1,"tome")) //item is tome
+			{
+				new multibuy;
+				if( (multibuy=CommandCheckEx(arg1,"tomes"))>0 || (multibuy=CommandCheckEx(arg1,"tome"))>0 )
+				{
+		        	if(multibuy>10)
+		        		multibuy=10;
+		        	for(new i=1;i<multibuy;i++) //doesnt itterate if its 1
+		        	{
+		          		W3CreateEvent(DoTriedToBuyItem,client);
+		        	}
+				}
+				else 
+				{
+					War3_ChatMessage(client,"%T","say tomes5 to buy many tomes at once, up to 10",client);
+				}
+		    }
+		    else if(CommandCheckStartsWith(arg1,"bigtome"))
+			{
+				new multibuy;
+				if( (multibuy=CommandCheckEx(arg1,"bigtomes"))>0 || (multibuy=CommandCheckEx(arg1,"bigtome"))>0 )
+				{
+					if(multibuy>10)
+						multibuy=10;
+		        	for(new i=1;i<multibuy;i++) //doesnt itterate if its 1
+		        	{
+		          		W3CreateEvent(DoTriedToBuyItem,client);
+		        	}
+				}
+				else
+				{
+					War3_ChatMessage(client,"%T","say bigtomes5 to buy many tomes at once, up to 10",client);
+				}
+		   	}
+		    W3CreateEvent(DoTriedToBuyItem,client);
+		    return returnblocking;
+		}
+	}
   }
   else
   {
@@ -407,13 +429,16 @@ public Action:War3Source_SayCommand(client,args)
         CommandCheck(arg1,"spendskills") ||
         CommandCheck(arg1,"showskills") ||
         CommandCheck(arg1,"shopmenu") ||
+        CommandCheck(arg1,"warcraft") ||
+        CommandCheck(arg1,"wc3") ||
+        CommandCheck(arg1,"warcraftmenu") ||
         CommandCheck(arg1,"sh1") ||
-        CommandCheck(arg1,"war3menu") ||
-        CommandCheck(arg1,"w3s") ||
-        CommandCheck(arg1,"war3rank") ||
-        CommandCheck(arg1,"war3stats") ||
+        CommandCheck(arg1,"wcsmenu") ||
+        CommandCheck(arg1,"wcs") ||
+        CommandCheck(arg1,"wcsrank") ||
+        CommandCheck(arg1,"wcsstats") ||
         CommandCheck(arg1,"levelbank")||
-        CommandCheckEx(arg1,"war3top")>0)
+        CommandCheckEx(arg1,"wcstop")>0)
     {
       if(W3IsPlayerXPLoaded(client))
       {

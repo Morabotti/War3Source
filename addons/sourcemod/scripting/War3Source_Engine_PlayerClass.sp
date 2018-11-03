@@ -19,7 +19,8 @@ new bool:bResetSkillsOnSpawn[MAXPLAYERSCUSTOM];
 new RaceIDToReset[MAXPLAYERSCUSTOM];
 
 
-new String:levelupSound[256]; //="war3source/levelupcaster.mp3";
+new String:levelupSound[] = "*mora-wcs/war3source/levelupcaster.mp3";
+new String:levelupSound_FullPath[] = "sound/mora-wcs/war3source/levelupcaster.mp3";
 
 
 
@@ -94,8 +95,8 @@ public OnPluginStart()
 }
 public OnMapStart()
 {
-    War3_AddSoundFolder(levelupSound, sizeof(levelupSound), "levelupcaster.mp3");
-    War3_AddCustomSound(levelupSound);
+	AddFileToDownloadsTable(levelupSound_FullPath);
+	PrecacheSoundAny(levelupSound);
 }
 
 public bool:InitNativesForwards()

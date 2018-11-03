@@ -1,9 +1,9 @@
 /**
  * File: War3Source_OrcishHorde.sp
  * Description: The Orcish Horde race for War3Source.
- * Author(s): Anthony Iacono 
+ * Author(s): Anthony Iacono
  */
- 
+
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -12,10 +12,11 @@
 #include <sdktools_functions>
 #include <sdktools_tempents>
 #include <sdktools_tempents_stocks>
+#include <sdktools_sound>
 
 #include <cstrike>
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Orcish Horde",
     author = "War3Source Team",
@@ -50,10 +51,10 @@ new bool:bBeenHit[MAXPLAYERSCUSTOM][MAXPLAYERSCUSTOM]; // [caster][victim] been 
 new MyWeaponsOffset,AmmoOffset;
 
 // Chance/Data Arrays
-new Float:ReincarnationChance[5]={0.0,0.15,0.37,0.59,0.8};
-new Float:CriticalStrikePercent[5]={0.0,0.33,0.66,1.01,1.33}; 
-new Float:CriticalGrenadePercent[5]={0.0,0.7,1.2,1.7,2.2};
-new Float:ChainDistance[5]={0.0,150.0,200.0,250.0,300.0};
+new Float:ReincarnationChance[9]={0.0, 0.08, 0.15, 0.20, 0.25, 0.30, 0.40, 0.50, 0.60};
+new Float:CriticalStrikePercent[9]={0.0, 0.15, 0.30, 0.45, 0.60, 0.75, 1.00, 1.15, 1.30};
+new Float:CriticalGrenadePercent[9]={0.0, 0.35, 0.70, 1.00, 1.33, 1.50, 1.75, 2.00, 2.25};
+new Float:ChainDistance[9]={0.0, 300.0, 320.0, 340.0, 360.0, 380.0, 400.0, 420.0, 450.0};
 
 
 new Float:WindWalkAlpha[5]={1.0,0.84,0.68,0.56,0.40};
@@ -63,37 +64,41 @@ new Float:WindWalkReinvisTime[MAXPLAYERSCUSTOM]; //when can he invis again?
 
 new Handle:hCvarDisableCritWithGloves;
 
-new MaximumWards[]={0,1,2,3,4}; 
-new HealAmount[]={0,1,2,3,5};
+new MaximumWards[]={0,1,2,3,4,4,4,4,4};
+new HealAmount[]={0,1,2,3,5,5,5,5,5};
 
-new String:lightningSound[256]; //="war3source/lightningbolt.mp3";
+new String:lightningSound[] ="*mora-wcs/war3source/lightningbolt.mp3";
+new String:lightningSound_FullPath[] ="sound/mora-wcs/war3source/lightningbolt.mp3";
 
 new SKILL_CRIT,SKILL_NADE_INVIS,SKILL_RECARN_WARD,ULT_LIGHTNING;
 // Effects
-new BeamSprite,HaloSprite,BloodSpray,BloodDrop; 
+new BeamSprite,HaloSprite,BloodSpray,BloodDrop;
+
+new String:spawn_sound[] = "*mora-wcs/ambient/cave_hit2.mp3";
+new String:spawn_sound_FullPath[] = "sound/mora-wcs/ambient/cave_hit2.mp3";
 
 public OnPluginStart()
-{  
+{
 
     HookEvent("round_start",RoundStartEvent);
-    RespawnDelayCvar=CreateConVar("war3_orc_respawn_delay","1","How long before spawning for reincarnation?");
-    ultCooldownCvar=CreateConVar("war3_orc_chain_cooldown","20","Cooldown time for chain lightning.");
+    RespawnDelayCvar=CreateConVar("war3_orc_respawn_delay","2","How long before spawning for reincarnation?");
+    ultCooldownCvar=CreateConVar("war3_orc_chain_cooldown","14","Cooldown time for chain lightning.");
 
     hCvarDisableCritWithGloves=CreateConVar("war3_orc_nocritgloves","1","Disable nade crit with gloves");
-    
-    MyWeaponsOffset=FindSendPropInfo("CBaseCombatCharacter","m_hMyWeapons");
-    AmmoOffset=FindSendPropInfo("CBasePlayer","m_iAmmo");
+
+    MyWeaponsOffset=FindSendPropOffs("CBaseCombatCharacter","m_hMyWeapons");
+    AmmoOffset=FindSendPropOffs("CBasePlayer","m_iAmmo");
     CreateTimer(0.1,DeciSecondTimer,_,TIMER_REPEAT);
-    
+
     LoadTranslations("w3s.race.orc.phrases.txt");
-}  
-   
+}
+
 
 public OnWar3LoadRaceOrItemOrdered(num)
 {
     if(num==30)
     {
-    
+
         new String:skill1_name[64]="CriticalGrenade";
         new String:skill2_name[64]="Reincarnation";
         if(War3_GetGame()==Game_TF)
@@ -101,29 +106,31 @@ public OnWar3LoadRaceOrItemOrdered(num)
             strcopy(skill1_name,sizeof(skill1_name),"WindWalker");
             strcopy(skill2_name,sizeof(skill2_name),"HealingWard");
         }
-        
+
         thisRaceID=War3_CreateNewRaceT("orc");
         //DP("registered ORC %d",thisRaceID);
-        SKILL_CRIT=War3_AddRaceSkillT(thisRaceID,"CriticalStrike",false,4);
-        SKILL_NADE_INVIS=War3_AddRaceSkillT(thisRaceID,skill1_name,false,4);
-        SKILL_RECARN_WARD=War3_AddRaceSkillT(thisRaceID,skill2_name,false,4);
-        ULT_LIGHTNING=War3_AddRaceSkillT(thisRaceID,"ChainLightning",true,4); //TEST
-        
-        
+        SKILL_CRIT=War3_AddRaceSkillT(thisRaceID,"CriticalStrike",false,8);
+        SKILL_NADE_INVIS=War3_AddRaceSkillT(thisRaceID,skill1_name,false,8);
+        SKILL_RECARN_WARD=War3_AddRaceSkillT(thisRaceID,skill2_name,false,8);
+        ULT_LIGHTNING=War3_AddRaceSkillT(thisRaceID,"ChainLightning",true,8); //TEST
+
+
         W3SkillCooldownOnSpawn(thisRaceID,ULT_LIGHTNING,10.0,_); //translated doesnt use this "Chain Lightning"?
         War3_CreateRaceEnd(thisRaceID);
-    
+
     }
 }
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(lightningSound, sizeof(lightningSound), "lightningbolt.mp3");
+    AddFileToDownloadsTable(lightningSound_FullPath);
+    AddFileToDownloadsTable(spawn_sound_FullPath);
+    PrecacheSoundAny(lightningSound);
+    PrecacheSoundAny(spawn_sound);
+    BeamSprite=War3_PrecacheBeamSprite();
+    HaloSprite=War3_PrecacheHaloSprite();
 
-    BeamSprite=War3_PrecacheBeamSprite(); 
-    HaloSprite=War3_PrecacheHaloSprite(); 
-    
-    
+
     BloodSpray = PrecacheModel("sprites/bloodspray.vmt");
     if(GAMECSGO) {
         BloodDrop = PrecacheModel("decals/blood1.vmt");
@@ -132,7 +139,6 @@ public OnMapStart()
         BloodDrop = PrecacheModel("sprites/blood.vmt");
     }
 
-    War3_AddCustomSound(lightningSound);
 }
 
 public OnRaceChanged(client,oldrace,newrace)
@@ -207,15 +213,15 @@ public DoChain(client,Float:distance,dmg,bool:first_call,last_target)
         start_pos[2]+=30.0; // offset for effect
         decl Float:target_pos[3],Float:vecAngles[3];
         GetClientAbsOrigin(target,target_pos);
-        target_pos[2]+=30.0;
-        TE_SetupBeamPoints(start_pos,target_pos,BeamSprite,HaloSprite,0,35,1.0,25.0,25.0,0,10.0,{255,100,255,255},40);
+        target_pos[2]+=25.0;
+        TE_SetupBeamPoints(start_pos,target_pos,BeamSprite,HaloSprite,0,35,1.0,25.0,5.0,0,10.0,{255,100,255,255},40);
         TE_SendToAll();
         GetClientEyeAngles(target,vecAngles);
         TE_SetupBloodSprite(target_pos, vecAngles, {200, 20, 20, 255}, 28, BloodSpray, BloodDrop);
         TE_SendToAll();
         EmitSoundToAllAny( lightningSound , target,_,SNDLEVEL_TRAIN);
         new new_dmg=RoundFloat(float(dmg)*0.66);
-        
+
         DoChain(client,distance,new_dmg,false,target);
     }
 }
@@ -234,20 +240,20 @@ public OnUltimateCommand(client,race,bool:pressed)
         //DP("skill level %d",skill);
         if(skill>0)
         {
-            
+
             if(War3_SkillNotInCooldown(client,thisRaceID,ULT_LIGHTNING,true)&&!Silenced(client))
             {
-                    
+
                 for(new x=1;x<=MaxClients;x++)
                     bBeenHit[client][x]=false;
-                
+
                 new Float:distance=ChainDistance[skill];
-                
+
                 DoChain(client,distance,60,true,0); // This function should also handle if there aren't targets
             }
         }
         else
-        { 
+        {
             W3MsgUltNotLeveled(client);
         }
     }
@@ -271,13 +277,13 @@ public OnAbilityCommand(client,ability,bool:pressed)
                 new Float:location[3];
                 GetClientAbsOrigin(client, location);
                 War3_CreateWardMod(client, location, 70, 300.0, 1.0, "heal", SKILL_RECARN_WARD, HealAmount, WARD_TARGET_TEAMMATES);
-                
+
                 W3MsgCreatedWard(client,War3_GetWardCount(client),MaximumWards[skill_level]);
             }
             else
             {
                 W3MsgNoWardsLeft(client);
-            }    
+            }
         }
     }
 }
@@ -326,7 +332,22 @@ public OnWar3EventSpawn(client)
 
     for(new x=1;x<=MaxClients;x++)
         bBeenHit[client][x]=false;
-    
+    new currRace = War3_GetRace( client );
+    if( currRace == thisRaceID )
+    {
+        decl Float:spawn_pos[3];
+        decl Float:spawn_pos2[3];
+        GetClientAbsOrigin(client, spawn_pos);
+        spawn_pos2[0]=spawn_pos[0];
+        spawn_pos2[1]=spawn_pos[1];
+        spawn_pos2[2]=spawn_pos[2] + 300;
+        EmitSoundToAllAny(spawn_sound, client);
+        TE_SetupBeamPoints(spawn_pos, spawn_pos2, BeamSprite, HaloSprite, 0, 5, 4.0, 35.0, 4.0, 0, 5.0, {0,156,0,255}, 5);
+        TE_SendToAll(0.0);
+        TE_SetupBeamRingPoint(spawn_pos, 60.0, 70.0, BeamSprite, HaloSprite, 2, 1, 4.0, 10.0, 2.0, {0,255,0,255}, 2, 0);
+        TE_SendToAll(0.0);
+    }
+
     if(War3_GetGame()==Game_TF && War3_GetRace(client)==thisRaceID)
     {
         new skill_wind=War3_GetSkillLevel(client,thisRaceID,SKILL_NADE_INVIS);
@@ -337,7 +358,7 @@ public OnWar3EventSpawn(client)
             War3_SetBuff(client,bInvisibilityDenySkill,thisRaceID,false);
         }
     }
-    WindWalkReinvisTime[client]=0.0; 
+    WindWalkReinvisTime[client]=0.0;
 }
 
 new damagestackcritmatch=-1;
@@ -384,20 +405,20 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
         return;
     }
 
-    if(victim>0 && attacker>0)
+    if(victim>0&&attacker>0&&victim!=attacker)
     {
         new race_attacker=War3_GetRace(attacker);
-        
+
         if(race_attacker==thisRaceID)
         {
             if(damagestackcritmatch==W3GetDamageStack()){
                 damagestackcritmatch=-1;
-                W3PrintSkillDmgHintConsole(victim,attacker,RoundFloat(damage*critpercent/(critpercent+1.0)),SKILL_CRIT);    
-                W3FlashScreen(victim,RGBA_COLOR_RED);    
+                W3PrintSkillDmgHintConsole(victim,attacker,RoundFloat(damage*critpercent/(critpercent+1.0)),SKILL_CRIT);
+                W3FlashScreen(victim,RGBA_COLOR_RED);
             }
         }
-            
-            
+
+
         if(War3_GetGame()==Game_TF)
         {
             if(race_attacker==thisRaceID)
@@ -410,9 +431,9 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                     War3_SetBuff(attacker,bInvisibilityDenySkill,thisRaceID,true); // make them visible, override so shop can't screw up
                     WindWalkReinvisTime[attacker]=GetGameTime()+fix_delay;
                 }
-                
-                
-                
+
+
+
             }
             //getting hurt = no invis allowed
             if(War3_GetRace(victim)==thisRaceID){
@@ -427,9 +448,9 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
         }
         else   //cs
         {
-            
+
             new skill_cg_attacker=War3_GetSkillLevel(attacker,race_attacker,SKILL_NADE_INVIS);
-            if(race_attacker==thisRaceID && skill_cg_attacker>0 && !Hexed(attacker,false) && GetClientTeam(attacker)!=GetClientTeam(victim))
+            if(race_attacker==thisRaceID && skill_cg_attacker>0 && !Hexed(attacker,false))
             {
                 new gloveitem=War3_GetItemIdByShortname("glove");
                 if(GetConVarInt(hCvarDisableCritWithGloves)>0&&gloveitem>0&&War3_GetOwnsItem(attacker,gloveitem)){
@@ -442,7 +463,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                         new Float:percent=CriticalGrenadePercent[skill_cg_attacker];
                         new originaldamage=RoundToFloor(damage);
                         new health_take=RoundFloat((damage*percent));
-                        
+
                         new onehp=false;
                         ///you cannot die from orc nade unless the usual nade damage kills you
                         if(GetClientHealth(victim)>originaldamage&&health_take>GetClientHealth(victim)){
@@ -458,7 +479,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                             W3PrintSkillDmgHintConsole(victim,attacker,War3_GetWar3DamageDealt(),SKILL_NADE_INVIS);
                             W3FlashScreen(victim,RGBA_COLOR_RED);
                             if(onehp){
-                                SetEntityHealth(victim,1); 
+                                SetEntityHealth(victim,1);
                             }
                             decl Float:fPos[3];
                             GetClientAbsOrigin(victim,fPos);
@@ -470,7 +491,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                                 fx_delay += GetRandomFloat(0.30,0.50);
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -501,7 +522,7 @@ public OnWar3EventDeath(index,attacker)
                         delay_spawn=0.25;
                     CreateTimer(delay_spawn,RespawnPlayer,index);
                     PrintHintText(index,"%T","REINCARNATION IN {amount} SECONDS!",index,delay_spawn);
-                    
+
                 }
             }
         }
@@ -523,7 +544,7 @@ public Action:RespawnPlayer(Handle:timer,any:client)
         War3_CachedAngle(client,ang);
         War3_CachedPosition(client,pos);
         TeleportEntity(client,pos,ang,NULL_VECTOR);
-        // cool, now remove their weapons besides knife and c4 
+        // cool, now remove their weapons besides knife and c4
         for(new slot=0;slot<10;slot++)
         {
             new ent=GetEntDataEnt2(client,MyWeaponsOffset+(slot*4));
@@ -553,7 +574,7 @@ public Action:RespawnPlayer(Handle:timer,any:client)
             if(!StrEqual(wep_check,"weapon_c4") && !StrEqual(wep_check,"weapon_knife"))
             {
                 new wep_ent=GivePlayerItem(client,wep_check);
-                if(wep_ent>0) 
+                if(wep_ent>0)
                 {
                     ///dont set clip
                     //SetEntData(wep_ent,Clip1Offset,War3_CachedDeadClip1(client,slot),4);
@@ -571,6 +592,7 @@ public Action:RespawnPlayer(Handle:timer,any:client)
 
 public RoundStartEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
+
     if(RaceDisabled)
     {
         return;
@@ -588,7 +610,7 @@ public Action:DeciSecondTimer(Handle:h)
     }
 
     if(War3_GetGame()==Game_TF){
-        
+
         for(new x=1;x<=MaxClients;x++)
         {
             if(ValidPlayer(x,true))

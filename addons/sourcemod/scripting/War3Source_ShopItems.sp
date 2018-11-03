@@ -22,6 +22,7 @@ enum {
     ITEM_FROST,
     ITEM_HEALTH,
     ITEM_TOME,
+    ITEM_BIGTOME,
     ITEM_RESPAWN,
     ITEM_SOCK,
     ITEM_GLOVES,
@@ -45,6 +46,7 @@ new iTomeSoundDelay[MAXPLAYERSCUSTOM];
 // Offsets
 new iOriginOffset;
 new iMyWeaponsOffset;
+new BeamSprite, HaloSprite;
 
 new bool:bDidDie[MAXPLAYERSCUSTOM]; // did they die before spawning?
 new bool:bFrosted[MAXPLAYERSCUSTOM];// don't frost before Timer_Unfrosted
@@ -53,6 +55,7 @@ new bool:bItemsLoaded;
 
 new Handle:hOrbSlowCvar;
 new Handle:hTomeXPCvar;
+new Handle:bigTomeXPCvar;
 new Handle:hBootsSpeedCvar;
 new Handle:hClawsDamageCvar;
 new Handle:hMaskLeechCvar;
@@ -61,7 +64,8 @@ new Handle:hRegenHPCvar;
 new Handle:hMoleDeathmatchAllowedCvar;
 
 new String:sOldModel[MAXPLAYERSCUSTOM][256];// reset model after 10 seconds
-new String:sBuyTomeSound[256];
+new String:sBuyTomeSound[] = "*mora-wcs/war3source/tomes.mp3";
+new String:sBuyTomeSound_FullPath[] = "sound/mora-wcs/war3source/tomes.mp3";
 
 public OnPluginStart()
 {
@@ -78,14 +82,15 @@ public OnPluginStart()
         HookEvent("announce_phase_end", Event_StartHalftime);
     }
 
-    iOriginOffset = FindSendPropInfo("CBaseEntity", "m_vecOrigin");
-    iMyWeaponsOffset = FindSendPropInfo("CBaseCombatCharacter", "m_hMyWeapons");
-    
-    hBootsSpeedCvar = CreateConVar("war3_shop_boots_speed", "1.2", "Boots speed, 1.2 is default");
+    iOriginOffset = FindSendPropOffs("CBaseEntity", "m_vecOrigin");
+    iMyWeaponsOffset = FindSendPropOffs("CBaseCombatCharacter", "m_hMyWeapons");
+
+    hBootsSpeedCvar = CreateConVar("war3_shop_boots_speed", "1.4", "Boots speed, 1.4 is default");
     hClawsDamageCvar = CreateConVar("war3_shop_claws_damage", GameTF() ? "10" : "6", "Claws of attack additional damage per bullet (CS) or per second (TF)");
     hMaskLeechCvar = CreateConVar("war3_shop_mask_percent", "0.30", "Percent of damage rewarded for Mask of Death, from 0.0 - 1.0");
-    hOrbSlowCvar = CreateConVar("war3_shop_orb_speed","0.6", "Orb of Frost speed, 1.0 is normal speed, 0.6 default for orb.");
+    hOrbSlowCvar = CreateConVar("war3_shop_orb_speed","0.5", "Orb of Frost speed, 1.0 is normal speed, 0.6 default for orb.");
     hTomeXPCvar = CreateConVar("war3_shop_tome_xp","100", "Experience awarded for Tome of Experience.");
+    bigTomeXPCvar = CreateConVar("war_shop_bigtome_xp","200", "Experience awarded for Bigger Tome of Experience");
     hSockGravityCvar = CreateConVar("war3_shop_sock_gravity", "0.4", "Gravity used for Sock of Feather, 0.4 is default for sock, 1.0 is normal gravity");
     hMoleDeathmatchAllowedCvar = CreateConVar("war3_shop_mole_dm", "0", "Set this to 1 if server is deathmatch");
     hRegenHPCvar = CreateConVar("war3_shop_ring_hp", GameTF() ? "4" : "2", "How much HP is regenerated per second");
@@ -110,7 +115,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
         {
             iShopitem[i] = 0;
         }
-        
+
         if(GAMECSANY)
         {
             iShopitem[ITEM_ANKH] = War3_CreateShopItemT("ankh", 3, false);
@@ -129,14 +134,17 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
         iShopitem[ITEM_HEALTH] = War3_CreateShopItemT("health", 3);
         iShopitem[ITEM_RESPAWN] = War3_CreateShopItemT("scroll", 15, false);
-        
+
         War3_AddItemBuff(iShopitem[ITEM_HEALTH], iAdditionalMaxHealth, 50);
 
         iShopitem[ITEM_TOME] = War3_CreateShopItemT("tome", 10);
         War3_SetItemProperty(iShopitem[ITEM_TOME], ITEM_USED_ON_BUY, true);
 
+        iShopitem[ITEM_BIGTOME] = War3_CreateShopItemT("bigtome",18);
+        War3_SetItemProperty(iShopitem[ITEM_BIGTOME], ITEM_USED_ON_BUY, true);
+
         iShopitem[ITEM_SOCK] = War3_CreateShopItemT("sock", 2);
-        
+
         War3_AddItemBuff(iShopitem[ITEM_ANTIWARD], bImmunityWards, true);
         War3_AddItemBuff(iShopitem[ITEM_SOCK], fLowGravityItem, GetConVarFloat(hSockGravityCvar));
         War3_AddItemBuff(iShopitem[ITEM_NECKLACE], bImmunityUltimates, true);
@@ -148,10 +156,12 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(sBuyTomeSound, sizeof(sBuyTomeSound), "tomes.mp3");
-    War3_AddCustomSound(sBuyTomeSound);
-    rsRoundState = RS_First;
-    if(GAMECSGO)
+	AddFileToDownloadsTable(sBuyTomeSound_FullPath);
+	PrecacheSoundAny(sBuyTomeSound);
+	rsRoundState = RS_First;
+	BeamSprite = PrecacheModel( "materials/mora-wcs/sprites/lgtning.vmt" );
+	HaloSprite = War3_PrecacheHaloSprite();
+	if(GAMECSGO)
     {
         // These models aren't always precached
         PrecacheModel("models/player/ctm_gsg9.mdl");
@@ -206,7 +216,7 @@ public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
     {
         for(new x=1; x <= MaxClients; x++)
         {
-            if(ValidPlayer(x, true) && GetClientTeam(x) > TEAM_SPECTATOR && 
+            if(ValidPlayer(x, true) && GetClientTeam(x) > TEAM_SPECTATOR &&
                War3_GetOwnsItem(x, iShopitem[ITEM_MOLE]))
             {
                 StartMole(x);
@@ -218,10 +228,10 @@ public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 public StartMole(client)
 {
     new Float:fMoleTime=5.0;
-    
+
     PrintHintText(client, "%T", "WARNING! MOLE IN {amount} SECONDS (item)!", client, fMoleTime);
     War3_ChatMessage(client, "%T", "WARNING! MOLE IN {amount} SECONDS (item)!", client, fMoleTime);
-    
+
     CreateTimer(0.2 + fMoleTime, DoMole, client);
 }
 
@@ -233,44 +243,43 @@ public OnWar3EventSpawn(client)
         War3_SetBuffItem(client, fSlow, iShopitem[ITEM_FROST], 1.0);
     }
 
-    if(GAMECSANY && 
+    if(GAMECSANY &&
        War3_GetOwnsItem(client, iShopitem[ITEM_ANKH]) && bDidDie[client])
     {
         if(!bSpawnedViaScrollRespawn[client] && rsRoundState == RS_Normal)
-        { 
+        {
             //only if he didnt already respawn from the "respawn item" cuz that gives items too
             CreateTimer(0.1, DoAnkhAction, client);
         }
     }
-    
+
     if(War3_GetOwnsItem(client, iShopitem[ITEM_HEALTH]))
     {
         War3_SetBuffItem(client, iAdditionalMaxHealth, iShopitem[ITEM_HEALTH], 50);
-        War3_ChatMessage(client, "%T", "+50 HP", client);
     }
-    
+
     if(War3_GetOwnsItem(client, iShopitem[ITEM_SOCK]))
     {
         War3_SetBuffItem(client, fLowGravityItem, iShopitem[ITEM_SOCK], GetConVarFloat(hSockGravityCvar));
         War3_ChatMessage(client, "%T", "You pull on your socks", client);
     }
-    
-    if(War3_GetGame() != Game_TF && 
-       War3_GetOwnsItem(client,iShopitem[ITEM_MOLE]) && 
+
+    if(War3_GetGame() != Game_TF &&
+       War3_GetOwnsItem(client,iShopitem[ITEM_MOLE]) &&
        GetConVarBool(hMoleDeathmatchAllowedCvar)) // deathmatch
     {
         StartMole(client);
     }
-    
+
     bDidDie[client] = false;
 }
 
 public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[32], bool:isWarcraft)
 {
     //W3ISOwnerSentry Checks for GAMETF internally
-    if(!W3IsOwnerSentry(attacker) && !isWarcraft && ValidPlayer(victim) && 
-       ValidPlayer(attacker, true) && 
-       ValidPlayer(victim, true, true) && 
+    if(!W3IsOwnerSentry(attacker) && !isWarcraft && ValidPlayer(victim) &&
+       ValidPlayer(attacker, true) &&
+       ValidPlayer(victim, true, true) &&
        GetClientTeam(victim) != GetClientTeam(attacker))
     {
         if(!W3HasImmunity(victim, Immunity_Items) && !Perplexed(attacker))
@@ -294,7 +303,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                         fDMG *= 0.50;
                     }
                 }
-                if(War3_DealDamage(victim, RoundFloat(fDMG), attacker, _, 
+                if(War3_DealDamage(victim, RoundFloat(fDMG), attacker, _,
                                    "claws", W3DMGORIGIN_ITEM, W3DMGTYPE_PHYSICAL))
                 {
                     PrintToConsole(attacker, "%T", "+{amount} Claws Damage",
@@ -304,21 +313,32 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
 
             if(War3_GetOwnsItem(attacker, iShopitem[ITEM_FROST]) && !bFrosted[victim])
             {
-                new Float:fSpeedMult = GetConVarFloat(hOrbSlowCvar);
-                if(fSpeedMult <= 0.0)
-                {
-                    fSpeedMult = 0.01; // 0.0 for override removes
-                }
-                if(fSpeedMult > 1.0)
-                {
-                    fSpeedMult = 1.0;
-                }
-                War3_SetBuffItem(victim, fSlow, iShopitem[ITEM_FROST], fSpeedMult);
-                bFrosted[victim] = true;
-
-                PrintToConsole(attacker, "%T", "ORB OF FROST!", attacker);
-                PrintToConsole(victim, "%T", "Frosted, reducing your speed", victim);
-                CreateTimer(2.0, Timer_Unfrost, victim);
+				new Float:fSpeedMult = GetConVarFloat(hOrbSlowCvar);
+				if(fSpeedMult <= 0.0)
+				{
+				    fSpeedMult = 0.01; // 0.0 for override removes
+				}
+				if(fSpeedMult > 1.0)
+				{
+				    fSpeedMult = 1.0;
+				}
+				War3_SetBuffItem(victim, fSlow, iShopitem[ITEM_FROST], fSpeedMult);
+				bFrosted[victim] = true;
+				
+				decl Float:attack_pos[3];
+				decl Float:victim_pos[3];
+				GetClientAbsOrigin(attacker,attack_pos);
+				GetClientAbsOrigin(victim,victim_pos);
+				attack_pos[2] += 30;
+				victim_pos[2] += 30;
+				TE_SetupBeamPoints(attack_pos, victim_pos, BeamSprite, HaloSprite, 1, 1, 0.5, 15.0, 15.0, 5, 0.0, { 11, 48, 234, 220 }, 0);
+				TE_SendToAll(0.0);
+				
+				W3SetPlayerColor(victim,0,11, 82, 234,_,GLOW_DEFAULT);
+				
+				PrintToConsole(attacker, "%T", "ORB OF FROST!", attacker);
+				PrintToConsole(victim, "%T", "Frosted, reducing your speed", victim);
+				CreateTimer(2.0, Timer_Unfrost, victim);
             }
         }
     }
@@ -344,27 +364,22 @@ public OnItemPurchase(client,item)
     }
 
     if(item == iShopitem[ITEM_BOOTS])
-    {       
+    {
         if(IsPlayerAlive(client))
         {
             War3_ChatMessage(client, "%T", "You strap on your boots", client);
         }
     }
-    
+
     if(item == iShopitem[ITEM_SOCK])
     {
-       
+
         if(IsPlayerAlive(client))
         {
             War3_ChatMessage(client, "%T", "You pull on your socks", client);
         }
     }
-    
-    if(War3_GetGame() != Game_TF && item == iShopitem[ITEM_HEALTH] && IsPlayerAlive(client))
-    {
-        War3_ChatMessage(client, "%T", "+50 HP", client);
-    }
-    
+
     if(item == iShopitem[ITEM_TOME])
     {
         new iRace = War3_GetRace(client);
@@ -373,14 +388,13 @@ public OnItemPurchase(client,item)
         {
             iBonusXP=0;
         }
-        
+
         War3_SetXP(client, iRace, War3_GetXP(client, iRace) + iBonusXP);
         W3DoLevelCheck(client);
-        
+
         War3_SetOwnsItem(client, item, false);
-        War3_ChatMessage(client, "%T", "+{amount} XP", client, iBonusXP);
         War3_ShowXP(client);
-        
+
         if(War3_TrackDelayExpired(iTomeSoundDelay[client]))
         {
             if (IsPlayerAlive(client))
@@ -391,11 +405,41 @@ public OnItemPurchase(client,item)
             {
                 EmitSoundToClientAny(client, sBuyTomeSound);
             }
-            
+
             War3_TrackDelay(iTomeSoundDelay[client], 0.25);
         }
     }
-    
+
+    if(item == iShopitem[ITEM_BIGTOME])
+    {
+       new ibRace = War3_GetRace(client);
+       new ibBonusXP = GetConVarInt(bigTomeXPCvar);
+       if(ibBonusXP < 0)
+       {
+          ibBonusXP=0;
+       }
+
+       War3_SetXP(client, ibRace, War3_GetXP(client, ibRace) + ibBonusXP);
+       W3DoLevelCheck(client);
+
+       War3_SetOwnsItem(client, item, false);
+       War3_ShowXP(client);
+
+       if(War3_TrackDelayExpired(iTomeSoundDelay[client]))
+       {
+            if (IsPlayerAlive(client))
+            {
+                EmitSoundToAllAny(sBuyTomeSound, client);
+            }
+            else
+            {
+                EmitSoundToClientAny(client, sBuyTomeSound);
+            }
+
+            War3_TrackDelay(iTomeSoundDelay[client], 0.25);
+       }
+    }
+
     if(item == iShopitem[ITEM_RESPAWN])
     {
         bSpawnedViaScrollRespawn[client]=false;
@@ -413,7 +457,7 @@ public OnItemPurchase(client,item)
 }
 
 public OnItemLost(client, item)
-{ 
+{
     if (!ValidPlayer(client))
     {
         return;
@@ -441,9 +485,11 @@ public Action:Timer_Unfrost(Handle:timer,any:client)
     bFrosted[client] = false;
 
     War3_SetBuffItem(client, fSlow, iShopitem[ITEM_FROST], 1.0);
+    W3ResetPlayerColor(client, 0);
     if(ValidPlayer(client))
     {
         PrintToConsole(client, "%T", "REGAINED SPEED from frost", client);
+        
     }
 }
 
@@ -459,7 +505,7 @@ public Action:RespawnPlayerViaScrollRespawn(Handle:h, any:client)
         // prevent ankh from activating
         bSpawnedViaScrollRespawn[client] = true;
         War3_SpawnPlayer(client);
-        
+
         if(GAMECSANY)
         {
             CreateTimer(0.2, GivePlayerCachedDeathWPNFull, client);
@@ -467,7 +513,7 @@ public Action:RespawnPlayerViaScrollRespawn(Handle:h, any:client)
         PrintCenterText(client, "%T", "RESPAWNED!", client);
 
         bSpawnedViaScrollRespawn[client] = false;
-        
+
         War3_SetOwnsItem(client, iShopitem[ITEM_RESPAWN], false);
         War3_ChatMessage(client, "%T", "Respawned by Scroll of Respawning", client);
         CreateTimer(1.0, NoLongerSpawnedViaScroll, client);
@@ -484,7 +530,7 @@ public Action:ResetModel(Handle:timer,any:client)
 }
 
 public Action:DoAnkhAction(Handle:t,any:client)
-{ 
+{
     //just respawned, passed that he didnt respawn from scroll, too bad if he respawned from orc or mage
     GivePlayerCachedDeathWPNFull(INVALID_HANDLE, client);
     War3_SetOwnsItem(client, iShopitem[ITEM_ANKH], false);
@@ -516,14 +562,14 @@ public Action:GivePlayerCachedDeathWPNFull(Handle:h,any:client)
         {
             new String:sWeaponName[64];
             War3_CachedDeadWeaponName(client, s, sWeaponName, sizeof(sWeaponName));
-            if(!StrEqual(sWeaponName,"") && !StrEqual(sWeaponName,"",false) && 
-               !StrEqual(sWeaponName,"weapon_c4") && 
+            if(!StrEqual(sWeaponName,"") && !StrEqual(sWeaponName,"",false) &&
+               !StrEqual(sWeaponName,"weapon_c4") &&
                !StrEqual(sWeaponName,"weapon_knife"))
             {
                 GivePlayerItem(client, sWeaponName);
             }
         }
-        
+
         if( GAMECSANY )
         {
             War3_RestoreCachedCSArmor(client);
@@ -542,7 +588,7 @@ public Action:DoMole(Handle:timer, any:client)
         new iAvailableLocations=0;
         new Float:fPlayerPosition[3];
         new Float:fSpawnPosition[3];
-        
+
         new ent = INVALID_ENT_REFERENCE;
         while((ent = FindEntityByClassname(ent, (iEnemyTeam == TEAM_T) ? "info_player_terrorist" : "info_player_counterterrorist")) != INVALID_ENT_REFERENCE)
         {
@@ -561,7 +607,7 @@ public Action:DoMole(Handle:timer, any:client)
                     }
                 }
             }
-            
+
             if(!bIsConflicting)
             {
                 fEmptySpawnPoints[iAvailableLocations][0] = fSpawnPosition[0];
@@ -591,7 +637,7 @@ public Action:DoMole(Handle:timer, any:client)
 
         War3_ChatMessage(client, "%T", "You have moled!", client);
         PrintHintText(client, "%T", "You have moled!", client);
-        
+
         War3_ShakeScreen(client, 1.0, 20.0, 12.0);
         CreateTimer(10.0, ResetModel, client);
 

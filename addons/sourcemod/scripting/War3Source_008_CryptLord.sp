@@ -7,7 +7,7 @@
 #include <sdktools_tempents>
 #include <sdktools_tempents_stocks>
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Crypt Lord",
     author = "War3Source Team",
@@ -35,52 +35,61 @@ public OnWar3RaceDisabled(oldrace)
 new SKILL_IMPALE,SKILL_SPIKE,SKILL_BEETLES,ULT_LOCUST;
 
 //skill 1
-new Float:ImpaleChanceArr[]={0.0,0.05,0.09,0.12,0.15}; 
+new Float:ImpaleChanceArr[9]={0.0, 0.05, 0.06, 0.09, 0.12, 0.15, 0.18, 0.21, 0.25};
 
 //skill 2
-new Float:SpikeDamageRecieve[]={1.0,0.95,0.9,0.85,0.80}; //TEST
-new Float:SpikeArmorGainArr[]={0.0,0.1,0.20,0.3,0.40}; 
-new Float:SpikeReturnDmgArr[]={0.0,0.05,0.10,0.15,0.2}; 
+new Float:SpikeDamageRecieve[9]={1.0, 0.97, 0.95, 0.93, 0.90, 0.87, 0.85, 0.83, 0.80}; //TEST
+new Float:SpikeArmorGainArr[9]={0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.45};
+new Float:SpikeReturnDmgArr[9]={0.0, 0.03, 0.5, 0.07, 0.1, 0.13, 0.15, 0.20, 0.25};
 
 //skill 3
 new const BeetleDamage=10;
-new Float:BeetleChanceArr[]={0.0,0.05,0.1,0.15,0.20};
+new Float:BeetleChanceArr[9]={0.0, 0.03, 0.5, 0.07, 0.1, 0.13, 0.15, 0.20, 0.25};
 
 //ultimate
 new Handle:ultCooldownCvar;
 new Handle:ultRangeCvar;
-new Float:LocustDamagePercent[]={0.0,0.1,0.2,0.3,0.4};
+new Float:LocustDamagePercent[9]={0.0, 0.1, 0.15, 0.2, 0.25, 0.30, 0.35, 0.4, 0.5};
 
 //new String:ultimateSound[]="war3source/locustswarmloop.wav";
-new String:ultimateSound[256]; //="war3source/locustswarmloop.mp3";
+new String:ultimateSound[] ="*mora-wcs/war3source/locustswarmloop.mp3";
+new String:ultimateSound_FullPath[] ="sound/mora-wcs/war3source/locustswarmloop.mp3";
 
 public OnPluginStart()
 {
-    
+
     ultCooldownCvar=CreateConVar("war3_crypt_locust_cooldown","20","Cooldown between ultimate usage");
     ultRangeCvar=CreateConVar("war3_crypt_locust_range","800","Range of locust ultimate");
-    
+
     LoadTranslations("w3s.race.crypt.phrases.txt");
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
 {
     if(num==80)
-    {                        
+    {
         thisRaceID=War3_CreateNewRaceT("crypt");
-        SKILL_IMPALE=War3_AddRaceSkillT(thisRaceID,"Impale",false,4);
-        SKILL_SPIKE=War3_AddRaceSkillT(thisRaceID,War3_GetGame()==Game_CS?"SpikedCarapaceCS":"SpikedCarapaceTF",false,4);
-        SKILL_BEETLES=War3_AddRaceSkillT(thisRaceID,"CarrionBeetles",false,4);
-        ULT_LOCUST=War3_AddRaceSkillT(thisRaceID,"LocustSwarm",true,4); 
-        War3_CreateRaceEnd(thisRaceID);    
+        SKILL_IMPALE=War3_AddRaceSkillT(thisRaceID,"Impale",false,8);
+        SKILL_SPIKE=War3_AddRaceSkillT(thisRaceID,War3_GetGame()==Game_CS?"SpikedCarapaceCS":"SpikedCarapaceTF",false,8);
+        SKILL_BEETLES=War3_AddRaceSkillT(thisRaceID,"CarrionBeetles",false,8);
+        ULT_LOCUST=War3_AddRaceSkillT(thisRaceID,"LocustSwarm",true,8);
+        War3_CreateRaceEnd(thisRaceID);
     }
 
 }
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(ultimateSound, sizeof(ultimateSound), "locustswarmloop.mp3");
-    War3_AddCustomSound(ultimateSound);
+    AddFileToDownloadsTable(ultimateSound_FullPath);
+    PrecacheSoundAny(ultimateSound);
+}
+
+public OnWar3EventSpawn(client)
+{
+   if(War3_GetRace(client) == thisRaceID)
+     {
+        War3_ShakeScreen(client,2.0,50.0,40.0);
+     }
 }
 
 public OnUltimateCommand(client,race,bool:pressed)
@@ -95,16 +104,16 @@ public OnUltimateCommand(client,race,bool:pressed)
         new ult_level=War3_GetSkillLevel(client,race,ULT_LOCUST);
         if(ult_level>0)
         {
-            
+
             if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_LOCUST,true))
             {
                 new Float:posVec[3];
                 GetClientAbsOrigin(client,posVec);
                 new Float:otherVec[3];
-                new Float:bestTargetDistance=999999.0; 
+                new Float:bestTargetDistance=999999.0;
                 new team = GetClientTeam(client);
                 new bestTarget=0;
-                
+
                 new Float:ultmaxdistance=GetConVarFloat(ultRangeCvar);
                 for(new i=1;i<=MaxClients;i++)
                 {
@@ -116,7 +125,7 @@ public OnUltimateCommand(client,race,bool:pressed)
                         {
                             bestTarget=i;
                             bestTargetDistance=GetVectorDistance(posVec,otherVec);
-                            
+
                         }
                     }
                 }
@@ -129,13 +138,12 @@ public OnUltimateCommand(client,race,bool:pressed)
                     new damage=RoundFloat(float(War3_GetMaxHP(bestTarget))*LocustDamagePercent[ult_level]);
                     if(damage>0)
                     {
-                        
+
                         if(War3_DealDamage(bestTarget,damage,client,DMG_BULLET,"locust")) //default magic
                         {
                             W3PrintSkillDmgHintConsole(bestTarget,client,War3_GetWar3DamageDealt(),ULT_LOCUST);
                             W3FlashScreen(bestTarget,RGBA_COLOR_RED);
-                            
-                            W3EmitSoundToAll(ultimateSound,client);
+                            EmitSoundToAllAny(ultimateSound, client);
                             War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_LOCUST,false,true);
                         }
                     }
@@ -165,9 +173,9 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage){
             new skill_level=War3_GetSkillLevel(victim,thisRaceID,SKILL_SPIKE);
             if(skill_level>0&&!Hexed(victim,false) )
             {
-                War3_DamageModPercent(SpikeDamageRecieve[skill_level]);  
+                War3_DamageModPercent(SpikeDamageRecieve[skill_level]);
             }
-        }    
+        }
     }
 }
 public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[32], bool:isWarcraft)
@@ -179,7 +187,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
 
     if(!isWarcraft&&ValidPlayer(victim,true)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
     {
-    
+
         if(War3_GetRace(victim)==thisRaceID &&W3Chance(W3ChanceModifier(attacker)) )
         {
             new skill_level=War3_GetSkillLevel(victim,thisRaceID,SKILL_SPIKE);
@@ -192,8 +200,8 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                         new armor_add=RoundFloat(damage*SpikeArmorGainArr[skill_level]);
                         if(armor_add>20) armor_add=20;
                         War3_SetCSArmor(victim,armor+armor_add);
-                        
-                        
+
+
                     }
                     new returndmg=RoundFloat(FloatMul(SpikeReturnDmgArr[skill_level],damage));
                     returndmg=returndmg<40?returndmg:40;
@@ -210,8 +218,8 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                     }
                 }
             }
-            
-            
+
+
             skill_level = War3_GetSkillLevel(attacker,thisRaceID,SKILL_IMPALE);
             if(skill_level>0&&!Hexed(victim,false)&&GetRandomFloat(0.0,1.0)<=ImpaleChanceArr[skill_level])
             {
@@ -227,7 +235,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                     PrintHintText(attacker,"%T","You got impaled by enemy",attacker);
                     W3FlashScreen(attacker,{0,0,128,80});
                 }
-            }    
+            }
         }
         if(War3_GetRace(attacker)==thisRaceID)
         {
@@ -241,11 +249,11 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                 }
                 else
                 {
-                    
+
                     War3_DealDamage(victim,BeetleDamage,attacker,DMG_BULLET,"beetles");
                     W3PrintSkillDmgHintConsole(victim,attacker,War3_GetWar3DamageDealt(),SKILL_BEETLES);
                     W3FlashScreen(victim,RGBA_COLOR_RED);
-                    
+
                 }
             }
             skill_level = War3_GetSkillLevel(attacker,thisRaceID,SKILL_IMPALE);
@@ -266,5 +274,3 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
         }
     }
 }
-
-

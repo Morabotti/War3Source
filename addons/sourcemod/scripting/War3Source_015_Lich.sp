@@ -7,7 +7,7 @@
 #include <sdktools_tempents>
 #include <sdktools_tempents_stocks>
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Lich",
     author = "War3Source Team",
@@ -35,33 +35,35 @@ public OnWar3RaceDisabled(oldrace)
 new SKILL_FROSTNOVA,SKILL_FROSTARMOR,SKILL_DARKRITUAL,ULT_DEATHDECAY;
 
 //skill 1
-new Float:FrostNovaArr[]={1.0,0.95,0.9,0.85,0.8,0.75}; 
-new Float:FrostNovaRadius=500.0;
+new Float:FrostNovaArr[]={1.0, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.55};
+new Float:FrostNovaRadius=600.0;
 new FrostNovaLoopCountdown[MAXPLAYERSCUSTOM];
 new bool:HitOnForwardTide[MAXPLAYERSCUSTOM][MAXPLAYERSCUSTOM]; //[VICTIM][ATTACKER]
 new Float:FrostNovaOrigin[MAXPLAYERSCUSTOM][3];
 new Float:AbilityCooldownTime=10.0;
 
 //skill 2
-new Float:FrostArmorAmount[]={0.0,1.0,2.0,3.0,4.0}; 
+new Float:FrostArmorAmount[]={0.0, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0};
 
 //skill 3
-new DarkRitualAmt[]={0,1,2,3,4};
+new DarkRitualAmt[]={0,1,1,2,2,3,3,4,5};
 
 //ultimate
 new Handle:ultCooldownCvar;
 new Handle:ultRangeCvar;
-new DeathDecayAmt[]={0,2,4,6,8};
-new String:ultsnd[256]; //="npc/antlion/attack_single2.wav";
-new String:novasnd[256]; //="npc/combine_gunship/ping_patrol.wav";
-new BeamSprite,HaloSprite; 
+new DeathDecayAmt[]={0, 2, 3, 4, 5, 6, 7, 8, 9};
+new String:ultsnd_lich[] ="*mora-wcs/war3source/lich/attack_single2.mp3";
+new String:novasnd_lich[] ="*mora-wcs/war3source/lich/ping_patrol.mp3";
+new String:ultsnd_lich_FullPath[] ="sound/mora-wcs/war3source/lich/attack_single2.mp3";
+new String:novasnd_lich_FullPath[] ="sound/mora-wcs/war3source/lich/ping_patrol.mp3";
+new BeamSprite,HaloSprite;
 
 public OnPluginStart()
 {
-    
+
     ultCooldownCvar=CreateConVar("war3_lich_deathdecay_cooldown","30","Cooldown between ultimate usage");
     ultRangeCvar=CreateConVar("war3_lich_deathdecay_range","99999","Range of death and decay ultimate");
-    
+
     LoadTranslations("w3s.race.lich_o.phrases.txt");
 }
 
@@ -70,28 +72,42 @@ public OnWar3LoadRaceOrItemOrdered(num)
     if(num==150)
     {
         thisRaceID=War3_CreateNewRaceT("lich_o");
-        SKILL_FROSTNOVA=War3_AddRaceSkillT(thisRaceID,"FrostNova",false,4);
-        SKILL_FROSTARMOR=War3_AddRaceSkillT(thisRaceID,"FrostArmor",false,4);
-        SKILL_DARKRITUAL=War3_AddRaceSkillT(thisRaceID,"DarkRitual",false,4);
-        ULT_DEATHDECAY=War3_AddRaceSkillT(thisRaceID,"DeathAndDecay",true,4); 
+        SKILL_FROSTNOVA=War3_AddRaceSkillT(thisRaceID,"FrostNova",false,8);
+        SKILL_FROSTARMOR=War3_AddRaceSkillT(thisRaceID,"FrostArmor",false,8);
+        SKILL_DARKRITUAL=War3_AddRaceSkillT(thisRaceID,"DarkRitual",false,8);
+        ULT_DEATHDECAY=War3_AddRaceSkillT(thisRaceID,"DeathAndDecay",true,8);
         War3_CreateRaceEnd(thisRaceID);
-        
+
         War3_AddSkillBuff(thisRaceID, SKILL_FROSTARMOR, fArmorPhysical, FrostArmorAmount);
         War3_AddSkillBuff(thisRaceID, SKILL_FROSTARMOR, fArmorMagic, FrostArmorAmount);
-        
+
         //prevent respawn and spamming (switching class in TF2 respawn;
         W3SkillCooldownOnSpawn(thisRaceID,ULT_DEATHDECAY,10.0,_);
     }
 
 }
 
+public OnWar3EventSpawn(client)
+{
+   new race = War3_GetRace(client);
+   if(race == thisRaceID)
+   {
+		decl Float:spawn_pos[3];
+		GetClientAbsOrigin(client,spawn_pos);
+		spawn_pos[2] += 45;
+		TE_SetupBeamRingPoint(spawn_pos, 1.0, 650.0, BeamSprite, HaloSprite, 0, 5, 1.0, 50.0, 1.0, {0,0,255,255}, 50, FBEAM_ISACTIVE);
+		TE_SendToAll();
+   }
+}
+
 public OnMapStart()
 {
-    War3_AddSoundFolder(ultsnd, sizeof(ultsnd), "lich/attack_single2.mp3");
-    War3_AddSoundFolder(novasnd, sizeof(novasnd), "lich/ping_patrol.mp3");
-
-    War3_AddCustomSound(ultsnd);
-    War3_AddCustomSound(novasnd);
+    AddFileToDownloadsTable(ultsnd_lich_FullPath);
+    AddFileToDownloadsTable(novasnd_lich_FullPath);
+    
+    PrecacheSoundAny(ultsnd_lich);
+    PrecacheSoundAny(novasnd_lich);
+    
     BeamSprite=War3_PrecacheBeamSprite();
     HaloSprite=War3_PrecacheHaloSprite();
 }
@@ -110,31 +126,31 @@ public OnAbilityCommand(client,ability,bool:pressed)
         {
             if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,SKILL_FROSTNOVA,true))
                 {
-            
-                    EmitSoundToAllAny(novasnd,client);
+
+                    EmitSoundToAllAny(novasnd_lich,client);
                     GetClientAbsOrigin(client,FrostNovaOrigin[client]);
                     FrostNovaOrigin[client][2]+=15.0;
                     FrostNovaLoopCountdown[client]=20;
-                    
+
                     for(new i=1;i<=MaxClients;i++){
                         HitOnForwardTide[i][client]=false;
                     }
-                    
-                    TE_SetupBeamRingPoint(FrostNovaOrigin[client], 1.0, 650.0, BeamSprite, HaloSprite, 0, 5, 1.0, 50.0, 1.0, {0,0,255,255}, 50, 0);
+
+                    TE_SetupBeamRingPoint(FrostNovaOrigin[client], 1.0, 650.0, BeamSprite, HaloSprite, 0, 5, 1.0, 50.0, 1.0, {0,0,255,255}, 50, FBEAM_ISACTIVE);
                     TE_SendToAll();
-                    
+
                     CreateTimer(0.1,BurnLoop,client); //damage
                     CreateTimer(0.13,BurnLoop,client); //damage
                     CreateTimer(0.17,BurnLoop,client); //damage
-                    
-                    
+
+
                     War3_CooldownMGR(client,AbilityCooldownTime,thisRaceID,SKILL_FROSTNOVA,_,_);
                     //EmitSoundToAll(taunt1,client);//,_,SNDLEVEL_TRAIN);
                     //EmitSoundToAll(taunt1,client);//,_,SNDLEVEL_TRAIN);
                     //EmitSoundToAll(taunt2,client);
-                    
+
                     PrintHintText(client,"%T","Frost Nova!",client);
-                
+
             }
         }
     }
@@ -153,24 +169,24 @@ public Action:BurnLoop(Handle:timer,any:attacker)
         new team = GetClientTeam(attacker);
         //War3_DealDamage(victim,damage,attacker,DMG_BURN);
         CreateTimer(0.1,BurnLoop,attacker);
-        
+
         new Float:hitRadius=(1.0-FloatAbs(float(FrostNovaLoopCountdown[attacker])-10.0)/10.0)*FrostNovaRadius;
-        
+
         //PrintToChatAll("distance to damage %f",hitRadius);
-        
+
         FrostNovaLoopCountdown[attacker]--;
-        
+
         new Float:otherVec[3];
         for(new i=1;i<=MaxClients;i++)
         {
             if(ValidPlayer(i,true)&&GetClientTeam(i)!=team&&!W3HasImmunity(i,Immunity_Skills))
             {
-        
+
                 if(HitOnForwardTide[i][attacker]==true){
                     continue;
                 }
-                    
-                    
+
+
                 GetClientAbsOrigin(i,otherVec);
                 //otherVec[2]+=30.0;
                 new Float:victimdistance=GetVectorDistance(FrostNovaOrigin[attacker],otherVec);
@@ -178,7 +194,7 @@ public Action:BurnLoop(Handle:timer,any:attacker)
                 {
                     if(FloatAbs(victimdistance-hitRadius)<(FrostNovaRadius/10.0))
                     {
-                        
+
                         HitOnForwardTide[i][attacker]=true;
                         //War3_DealDamage(i,RoundFloat(FrostNovaMaxDamage[War3_GetSkillLevel(attacker,thisRaceID,SKILL_FROSTNOVA)]*victimdistance/FrostNovaRadius/2.0),attacker,DMG_ENERGYBEAM,"FrostNova");
                         War3_SetBuff(i,fSlow,thisRaceID,FrostNovaArr[War3_GetSkillLevel(attacker,thisRaceID,SKILL_FROSTNOVA)]);
@@ -204,7 +220,7 @@ public Action:RemoveFrostNova(Handle:t,any:client){
 /*
 public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 {
-        
+
     if(War3_GetRace(victim)==thisRaceID&&ValidPlayer(attacker,true))
     {
         if(GetClientTeam(victim)!=GetClientTeam(attacker))
@@ -230,7 +246,7 @@ public Action: farmor(Handle:timer,any:attacker)
 {
     War3_SetBuff(attacker,fAttackSpeed,thisRaceID,1.0);
 }
-*/    
+*/
 public OnWar3EventDeath(victim,attacker)
 {
     if(RaceDisabled)
@@ -270,7 +286,7 @@ public OnUltimateCommand(client,race,bool:pressed)
         return;
     }
 
-    new userid=GetClientUserId(client);            
+    new userid=GetClientUserId(client);
     if(race==thisRaceID && pressed && userid>1 && IsPlayerAlive(client) )
     {
         new ult_level=War3_GetSkillLevel(client,race,ULT_DEATHDECAY);
@@ -317,17 +333,27 @@ public OnUltimateCommand(client,race,bool:pressed)
                             new victim=targetlist[i];
                             if(War3_DealDamage(victim,damage,client,DMG_BULLET,"Death and Decay")) //default magic
                             {
-                                damagedealt+=War3_GetWar3DamageDealt();
-                                W3FlashScreen(victim,RGBA_COLOR_RED);
-                                PrintHintText(victim,"%T","Attacked by Death and Decay",victim);
+								damagedealt+=War3_GetWar3DamageDealt();
+								W3FlashScreen(victim,RGBA_COLOR_RED);
+								PrintHintText(victim,"%T","Attacked by Death and Decay",victim);
+								new Float:Pos[3];
+								GetClientAbsOrigin(targetlist[i], Pos);
+								TE_SetupBeamRingPoint(Pos, 99.0, 100.0, BeamSprite, HaloSprite, 0, 1, 1.0, 5.0, 1.0, {255, 51, 0,255}, 30, 0);
+								TE_SendToAll(0.0);
+								TE_SetupBeamRingPoint(Pos, 69.0, 70.0, BeamSprite, HaloSprite, 0, 1, 1.0, 5.0, 1.0, {255, 0, 0,255}, 30, 0);
+								TE_SendToAll(0.3);
+								TE_SetupBeamRingPoint(Pos, 39.0, 40.0, BeamSprite, HaloSprite, 0, 1, 1.0, 5.0, 1.0, {204, 0, 0,255}, 30, 0);
+								TE_SendToAll(0.6);
+								TE_SetupBeamRingPoint(Pos, 9.0, 10.0, BeamSprite, HaloSprite, 0, 1, 1.0, 5.0, 1.0, {153, 0, 0,255}, 30, 0);
+								TE_SendToAll(0.9);
                             }
                         }
                         PrintHintText(client,"%T","Death and Decay attacked for {amount} total damage!",client,damage*targetsfound);
                         War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_DEATHDECAY,_,_);
-                        EmitSoundToAllAny(ultsnd,client);
+                        EmitSoundToAllAny(ultsnd_lich,client);
                     }
                 }
-                
+
             }
         }
         else
@@ -336,4 +362,3 @@ public OnUltimateCommand(client,race,bool:pressed)
         }
     }
 }
-

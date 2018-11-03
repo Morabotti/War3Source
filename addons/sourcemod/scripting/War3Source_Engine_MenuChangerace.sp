@@ -319,7 +319,10 @@ War3Source_ChangeRaceMenu(client,bool:forceUncategorized=false)
                 if(minlevel<0) minlevel=0;
                 if(minlevel)
                 {
-                    Format(rdisp,sizeof(rdisp),"%s %T",rdisp,"reqlvl {amount}",GetTrans(),minlevel);
+                	if(minlevel>=W3GetTotalLevels(client))
+                	{
+                		Format(rdisp,sizeof(rdisp),"%s %T",rdisp,"reqlvl {amount}",GetTrans(),minlevel);
+                	}
                 }
                 //if(!HasRaceAccess(client,race)){ //show that it is restricted?
                 //    Format(rdisp,sizeof(rdisp),"%s\nRestricted",rdisp);

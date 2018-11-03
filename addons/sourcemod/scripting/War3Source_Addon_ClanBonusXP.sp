@@ -30,7 +30,7 @@ public OnPluginStart()
     g_hClanVar = CreateConVar("war3_bonusclan_name","War3","Player who are wearing this clantag will gain bonus XP");
     g_hXPMultipler = CreateConVar("war3_bonusclan_xprate","1.2","Bonus XP Multipler", 0, true, 1.0);
     g_hGOMultipler = CreateConVar("war3_bonusclan_goldrate","1.0","Bonus Gold Multipler", 0, true, 1.0);
-    g_hVarWelcomeMsg = CreateConVar ("war3_bonusclan_welcome", "1.0", "Enable the welcome message", 0, true, 0.0, true, 1.0);
+    g_hVarWelcomeMsg = CreateConVar ("war3_bonusclan_welcome", "0", "Enable the welcome message", 0, true, 0.0, true, 1.0);
 
     // tells if steamtools is loaded and(if used from a client console) if you're member of the war3_bonusclan_id group
     RegConsoleCmd("war3_bonusclan", Command_TellStatus,"Gives information about your current group status.");
@@ -142,18 +142,18 @@ public Action:WelcomeAdvertTimer (Handle:timer, any:client)
         Format(buffer2, sizeof(buffer2), "\x01\x04%s\x01", buffer2);
         Format(str_xprate,sizeof(str_xprate),"\x01\x04%s\x01",str_xprate);
         Format(str_goldrate,sizeof(str_goldrate),"\x01\x04%s\x01",str_goldrate);
-        PrintToChat (client, "\x01\x04[War3Source]\x01 %T", "Welcome",client,ClientName,buffer2);
+        PrintToChat (client, "\x01\x04[-WCS-]\x01 %T", "Welcome",client,ClientName,buffer2);
         if (xprate!=0 && goldrate!=0){
-            PrintToChat (client, "\x01\x04[War3Source]\x01 %T", "Welcome_XP_GO",client,str_xprate,str_goldrate);
+            PrintToChat (client, "\x01\x04[-WCS-]\x01 %T", "Welcome_XP_GO",client,str_xprate,str_goldrate);
         }
         if (xprate!=0 && goldrate==0){
-            PrintToChat (client, "\x01\x04[War3Source]\x01 %T", "Welcome_XP",client,str_xprate);
+            PrintToChat (client, "\x01\x04[-WCS-]\x01 %T", "Welcome_XP",client,str_xprate);
         }
         if (xprate==0 && goldrate!=0){
-            PrintToChat (client, "\x01\x04[War3Source]\x01 %T", "Welcome_GO",client,str_goldrate);
+            PrintToChat (client, "\x01\x04[-WCS-]\x01 %T", "Welcome_GO",client,str_goldrate);
         }
         if (xprate==0 && goldrate==0){
-            PrintToChat (client, "\x01\x04[War3Source]\x01 %T", "Welcome_No_Bonus",client);
+            PrintToChat (client, "\x01\x04[-WCS-]\x01 %T", "Welcome_No_Bonus",client);
         }
     }
 

@@ -12,8 +12,13 @@ new bool:CooldownOnSpawn[MAXRACES][MAXSKILLCOUNT];
 new bool:CdOnSpawnPrintOnExpire[MAXRACES][MAXSKILLCOUNT];
 new Float:CooldownOnSpawnDuration[MAXRACES][MAXSKILLCOUNT];
 
-new String:ultimateReadySound[256];
-new String:abilityReadySound[256];
+new String:ultimateReadySound[] = "*mora-wcs/war3source/ult_ready.mp3";
+new String:abilityReadySound[] = "*mora-wcs/war3source/ability_refresh.mp3";
+new String:ultimateReadySound_FullPath[] = "sound/mora-wcs/war3source/ult_ready.mp3";
+new String:abilityReadySound_FullPath[] = "sound/mora-wcs/war3source/ability_refresh.mp3";
+new String:sHintSound[] = "*mora-wcs/war3source/csgo/ui/hint.mp3";
+new String:sHintSound_FullPath[] = "sound/mora-wcs/war3source/csgo/ui/hint.mp3";
+
 
 new Handle:g_CooldownExpiredForwardHandle;
 
@@ -45,23 +50,28 @@ public OnPluginStart()
 }
 public OnMapStart()
 {
-    new String:sHintSound[256];
-    War3_AddSoundFolder(ultimateReadySound, sizeof(ultimateReadySound), "ult_ready.mp3");
-    War3_AddSoundFolder(abilityReadySound, sizeof(abilityReadySound), "ability_refresh.mp3");
-    War3_GetHintSound(sHintSound, sizeof(sHintSound));
-
-    for(new i=0;i<MAXTHREADS;i++){
-        expireTime[i]=0.0;
-    }
-    
-    if(sHintSound[0] != '\0') {
-        War3_AddCustomSound(sHintSound);
-    }
-    War3_AddCustomSound(abilityReadySound);
-    War3_AddCustomSound(ultimateReadySound);
-
-
-    ClearAllCooldowns();
+	/*new String:sHintSound[256];
+	//War3_AddSoundFolder(ultimateReadySound, sizeof(ultimateReadySound), "ult_ready.mp3");
+	//War3_AddSoundFolder(abilityReadySound, sizeof(abilityReadySound), "ability_refresh.mp3");
+	War3_GetHintSound(sHintSound, sizeof(sHintSound));
+	
+	for(new i=0;i<MAXTHREADS;i++){
+	    expireTime[i]=0.0;
+	}
+	
+	if(sHintSound[0] != '\0') {
+	    War3_AddCustomSound(sHintSound);
+	}
+	//War3_AddCustomSound(abilityReadySound);
+	//War3_AddCustomSound(ultimateReadySound);*/
+	AddFileToDownloadsTable(abilityReadySound_FullPath);
+	AddFileToDownloadsTable(ultimateReadySound_FullPath);
+	AddFileToDownloadsTable(sHintSound_FullPath);
+	PrecacheSoundAny(ultimateReadySound);
+	PrecacheSoundAny(abilityReadySound);
+	PrecacheSoundAny(sHintSound);
+	
+	ClearAllCooldowns();
 }
 
 public bool:InitNativesForwards()

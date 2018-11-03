@@ -10,7 +10,8 @@ public Plugin:myinfo =
     description = "Give XP and Gold to those who deserve it"
 };
 
-new String:levelupSound[256]; //="war3source/levelupcaster.mp3";
+new String:levelupSound[] ="*mora-wcs/war3source/levelupcaster.mp3";
+new String:levelupSound_FullPath[] ="sound/mora-wcs/war3source/levelupcaster.mp3";
 
 ///MAXLEVELXPDEFINED is in constants
 new XPLongTermREQXP[MAXLEVELXPDEFINED+1]; //one extra for even if u reached max level
@@ -100,8 +101,8 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(levelupSound, sizeof(levelupSound), "levelupcaster.mp3");
-    War3_AddCustomSound(levelupSound);
+	AddFileToDownloadsTable(levelupSound_FullPath);
+	PrecacheSoundAny(levelupSound);
 }
 
 public bool:InitNativesForwards()
@@ -164,6 +165,7 @@ public NW3GetKillXP(Handle:plugin, numParams)
     }
     return 0;
 }
+
 public Native_War3_ShowXP(Handle:plugin,numParams)
 {
     ShowXP(GetNativeCell(1));
@@ -282,18 +284,12 @@ ParseXPSettingsFile(){
     KvRewind(keyValue);
 
     if(!KvJumpToKey(keyValue,"levels"))
-	{
-        SetFailState("error, key value for levels configuration not found");
-        return false;
-	}
+        return SetFailState("error, key value for levels configuration not found");
 
 
     decl String:buffer[2048];
     if(!KvGotoFirstSubKey(keyValue))
-    {
-        SetFailState("sub key failed");
-        return false;
-    }
+        return SetFailState("sub key failed");
 
     // required xp, long term
     KvGetString(keyValue, "required_xp", buffer, sizeof(buffer));
@@ -304,10 +300,7 @@ ParseXPSettingsFile(){
     LevelStringToArray(buffer, XPLongTermKillXP);
 
     if(!KvGotoNextKey(keyValue))
-	{
-		SetFailState("XP No Next key");
-		return false;
-	}
+        return SetFailState("XP No Next key");
     
     // required xp, short term
     KvGetString(keyValue, "required_xp", buffer, sizeof(buffer));

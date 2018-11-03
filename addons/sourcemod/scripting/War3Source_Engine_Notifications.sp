@@ -34,7 +34,7 @@ public Native_NotifyPlayerTookDamageFromSkill(Handle:plugin, numParams)
     
     new String:sAttackerName[32];
     GetClientName(attacker, sAttackerName, sizeof(sAttackerName));
-        
+    
     new String:sVictimName[32];
     GetClientName(victim, sVictimName, sizeof(sVictimName));
     

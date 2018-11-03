@@ -9,7 +9,8 @@ public Plugin:myinfo =
 };
 
 new Handle:hUseCategorysCvar;
-new String:sBuyItemSound[256];
+new String:sBuyItemSound[] = "*mora-wcs/war3source/ui/ReceiveGold.mp3";
+new String:sBuyItemSound_FullPath[] = "sound/mora-wcs/war3source/ui/ReceiveGold.mp3";
 new WantsToBuy[MAXPLAYERSCUSTOM];
 new bool:bRoundEnd = false;
 
@@ -34,8 +35,8 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(sBuyItemSound, sizeof(sBuyItemSound), "ui/ReceiveGold.mp3");
-    War3_AddCustomSound(sBuyItemSound);
+	AddFileToDownloadsTable(sBuyItemSound_FullPath);
+	PrecacheSoundAny(sBuyItemSound);
 }
 
 public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroadcast)

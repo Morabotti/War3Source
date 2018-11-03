@@ -208,7 +208,7 @@ public OnGameFrame()
                         {
                             if(GAMEFOF)
                             {
-                                StopSound(client, SNDCHAN_STATIC, "war3source/csgo/ui/hint.mp3");
+                                StopSoundAny(client, SNDCHAN_STATIC, "mora-wcs/war3source/csgo/ui/hint.mp3");
                             }
                             else
                             {

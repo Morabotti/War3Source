@@ -9,7 +9,8 @@ public Plugin:myinfo =
 };
 
 new iMaskSoundDelay[MAXPLAYERSCUSTOM];
-new String:sMaskSound[256];
+new String:sMaskSound[] = "*mora-wcs/war3source/mask.mp3";
+new String:sMaskSound_FullPath[] = "sound/mora-wcs/war3source/mask.mp3";
 
 
 new BeamSprite = -1;
@@ -40,8 +41,8 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(sMaskSound, sizeof(sMaskSound), "mask.mp3");
-    War3_AddCustomSound(sMaskSound);
+    AddFileToDownloadsTable(sMaskSound_FullPath);
+    PrecacheSoundAny(sMaskSound);
     
     BeamSprite = War3_PrecacheBeamSprite();
     HaloSprite = War3_PrecacheHaloSprite();

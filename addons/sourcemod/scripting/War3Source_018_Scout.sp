@@ -1,10 +1,10 @@
 #pragma semicolon 1
- 
+
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 #include <sdktools>
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Scout",
     author = "War3Source Team",
@@ -33,41 +33,48 @@ new SKILL_INVIS, SKILL_TRUESIGHT, SKILL_DISARM, ULT_MARKSMAN;
 
 // Chance/Data Arrays
 new Float:InvisDrain=0.05; //as a percent of your health
-new Float:InvisDuration[5]={0.0,5.0,6.0,7.0,8.0};
+new Float:InvisDuration[9]={0.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
 new Handle:InvisEndTimer[MAXPLAYERSCUSTOM];
 new bool:InInvis[MAXPLAYERSCUSTOM];
 
-new Float:EyeRadius[5]={0.0,400.0,500.0,700.0,800.0};
+new Float:EyeRadius[9]={0.0, 350.0, 400.0, 450.0, 500.0, 550.0, 600.0, 650.0, 700.0};
 
-new Float:DisarmChance[5]={0.0,0.06,0.10,0.13,0.15};
-new Float:MarksmanCrit[5]={0.0,0.15,0.3,0.45,0.6};
+new Float:DisarmChance[9]={0.0, 0.08, 0.11, 0.14, 0.17, 0.20, 0.23, 0.26, 0.28};
+new Float:MarksmanCrit[9]={0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.40, 0.50};
 new const STANDSTILLREQ=10;
 
+new String:Ult_SND[] = "*mora-wcs/war3source/morabotti/wind_hit3.mp3";
+new String:Ult_SND_FullPath[] = "sound/mora-wcs/war3source/morabotti/wind_hit3.mp3";
 
 new bool:bDisarmed[MAXPLAYERSCUSTOM];
 new Float:lastvec[MAXPLAYERSCUSTOM][3];
 new standStillCount[MAXPLAYERSCUSTOM];
 
 // Effects
-//new BeamSprite,HaloSprite;
+new EffectSprite ; //HaloSprite;
+
 
 new thisAuraID;
 
 public OnPluginStart()
 {
-    
+
 
     //UltCooldownCvar=CreateConVar("war3_scout_ult_cooldown","20","Cooldown timer.");
-    
+
     LoadTranslations("w3s.race.scout_o.phrases.txt");
     CreateTimer(0.1,DeciSecondTimer,_,TIMER_REPEAT);
 }
 
 public OnMapStart()
 {
-    //BeamSprite=PrecacheModel("materials/sprites/lgtning.vmt");
-    //HaloSprite=PrecacheModel("materials/sprites/halo01.vmt");
-    
+	AddFileToDownloadsTable(Ult_SND_FullPath);
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/shellchrome.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/shellchrome.vtf");
+	//BeamSprite=PrecacheModel("materials/sprites/lgtning.vmt");
+	//HaloSprite = War3_PrecacheHaloSprite();
+	EffectSprite = PrecacheModel("materials/mora-wcs/sprites/shellchrome.vmt");
+	PrecacheSoundAny(Ult_SND);
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -75,12 +82,12 @@ public OnWar3LoadRaceOrItemOrdered(num)
     if(num==180)
     {
         thisRaceID=War3_CreateNewRaceT("scout_o");
-        SKILL_INVIS=War3_AddRaceSkillT(thisRaceID,"Vanish",false,4,"5%","5-8");
-        SKILL_TRUESIGHT=War3_AddRaceSkillT(thisRaceID,"TrueSight",false,4,"400-800");
-        
-        SKILL_DISARM=War3_AddRaceSkillT(thisRaceID,"Disarm",false,4,"6/10/13/15%");
-        ULT_MARKSMAN=War3_AddRaceSkillT(thisRaceID,"Marksman",true,4,"1.6-2.0"); 
-    
+        SKILL_INVIS=War3_AddRaceSkillT(thisRaceID,"Vanish",false,8,"5%","5-8");
+        SKILL_TRUESIGHT=War3_AddRaceSkillT(thisRaceID,"TrueSight",false,8,"400-800");
+
+        SKILL_DISARM=War3_AddRaceSkillT(thisRaceID,"Disarm",false,8,"6/10/13/15%");
+        ULT_MARKSMAN=War3_AddRaceSkillT(thisRaceID,"Marksman",true,8,"1.6-2.0");
+
         War3_CreateRaceEnd(thisRaceID);
          //EyeRadius[1]
         thisAuraID =W3RegisterChangingDistanceAura("scout_reveal",true);
@@ -116,7 +123,7 @@ public OnSkillLevelChanged(client,race,skill,newskilllevel)
         return;
     }
 
-    
+
     if(race==thisRaceID && War3_GetRace(client)==thisRaceID)
     {
         if(skill==SKILL_TRUESIGHT) //1
@@ -130,19 +137,29 @@ public OnSkillLevelChanged(client,race,skill,newskilllevel)
 }
 
 public OnWar3EventSpawn(client){
-    if(RaceDisabled)
-    {
-        return;
-    }
-
-    if(bDisarmed[client]){
-        EndInvis2(INVALID_HANDLE,client);
-    }
-    if(InInvis[client]){
-        War3_SetBuff(client,fInvisibilitySkill,thisRaceID,1.0);
-        War3_SetBuff(client,fHPDecay,thisRaceID,0.0);
-        InInvis[client]=false;
-    }
+	if(RaceDisabled)
+	{
+		return;
+	}
+	new race = War3_GetRace(client);
+	if(race == thisRaceID)
+	{
+		decl Float:Spawn_pos[3];
+		GetClientAbsOrigin(client, Spawn_pos);
+		Spawn_pos[2] += 30;
+		TE_SetupBeamRingPoint(Spawn_pos, 100.0, 110.0, EffectSprite, EffectSprite, 0, 5, 3.0, 30.0, 3.0, { 255, 255, 255, 225 }, 6, FBEAM_ISACTIVE);
+		TE_SendToAll();
+		EmitSoundToAllAny(Ult_SND, client);
+	}
+	
+	if(bDisarmed[client]){
+		EndInvis2(INVALID_HANDLE,client);
+	}
+	if(InInvis[client]){
+		War3_SetBuff(client,fInvisibilitySkill,thisRaceID,1.0);
+		War3_SetBuff(client,fHPDecay,thisRaceID,0.0);
+		InInvis[client]=false;
+	}
 }
 public OnAbilityCommand(client,ability,bool:pressed)
 {
@@ -158,40 +175,49 @@ public OnAbilityCommand(client,ability,bool:pressed)
         {
             if(InInvis[client]){
                 TriggerTimer(InvisEndTimer[client]);
-                
+
             }
-        
+
             else if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,SKILL_INVIS,true))
-            {       
-            
-                War3_SetBuff(client,bDisarm,thisRaceID,true);
-                bDisarmed[client]=true;
-                War3_SetBuff(client,fInvisibilitySkill,thisRaceID,0.03);
-                War3_SetBuff(client,fHPDecay,thisRaceID,War3_GetMaxHP(client)*InvisDrain);
-                InvisEndTimer[client]=CreateTimer(InvisDuration[skilllvl],EndInvis,client);
-                
-                
-                PrintHintText(client,"%T","You sacrificed part of yourself for invis",client);
-                InInvis[client]=true;
-                War3_CooldownMGR(client,15.0,thisRaceID,SKILL_INVIS);
-                
+            {
+				War3_SetBuff(client,bDisarm,thisRaceID,true);
+				bDisarmed[client]=true;
+				War3_SetBuff(client,fInvisibilitySkill,thisRaceID,0.03);
+				War3_SetBuff(client,fHPDecay,thisRaceID,War3_GetMaxHP(client)*InvisDrain);
+				InvisEndTimer[client]=CreateTimer(InvisDuration[skilllvl],EndInvis,client);
+				new Float:EffectPOS[3];
+				GetClientAbsOrigin(client, EffectPOS);
+				EffectPOS[2] += 30;
+				TE_SetupBeamRingPoint(EffectPOS, 100.0, 110.0, EffectSprite, EffectSprite, 0, 5, 0.2, 30.0, 3.0, { 255, 255, 255, 225 }, 6, 0);
+				TE_SendToAll();
+				EmitSoundToAllAny(Ult_SND, client);
+				
+				PrintHintText(client,"%T","You sacrificed part of yourself for invis",client);
+				InInvis[client]=true;
+				War3_CooldownMGR(client,15.0,thisRaceID,SKILL_INVIS);
             }
         }
     }
 }
 public Action:EndInvis(Handle:timer,any:client)
 {
-    if(RaceDisabled)
-    {
-        return;
-    }
-
-    InInvis[client]=false;
-    War3_SetBuff(client,fInvisibilitySkill,thisRaceID,1.0);
-    War3_SetBuff(client,fHPDecay,thisRaceID,0.0);
-    CreateTimer(1.0,EndInvis2,client);
-    PrintHintText(client,"%T","No Longer Invis! Cannot shoot for 1 sec!",client);
-    
+	if(RaceDisabled)
+	{
+		return;
+	}
+	
+	InInvis[client]=false;
+	War3_SetBuff(client,fInvisibilitySkill,thisRaceID,1.0);
+	War3_SetBuff(client,fHPDecay,thisRaceID,0.0);
+	CreateTimer(1.0,EndInvis2,client);
+	PrintHintText(client,"%T","No Longer Invis! Cannot shoot for 1 sec!",client);
+	
+	new Float:EffectPOS[3];
+	GetClientAbsOrigin(client, EffectPOS);
+	EffectPOS[2] += 30;
+	TE_SetupBeamRingPoint(EffectPOS, 100.0, 110.0, EffectSprite, EffectSprite, 0, 5, 0.2, 30.0, 3.0, { 255, 255, 255, 225 }, 6, 0);
+	TE_SendToAll();
+	StopSoundAny(client, SNDCHAN_AUTO, Ult_SND);
 }
 public Action:EndInvis2(Handle:timer,any:client){
     if(RaceDisabled)
@@ -224,14 +250,14 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
                     GetClientAbsOrigin(victim,vicpos);
                     GetClientAbsOrigin(attacker,attpos);
                     new Float:distance=GetVectorDistance(vicpos,attpos);
-                    
+
                     if(distance>1000.0){ //0-512 normal damage 512-1024 linear increase, 1024-> maximum
                         distance=1000.0;
                     }
                     new Float:multi=distance*MarksmanCrit[lvl]/1000.0;
                     War3_DamageModPercent(multi+1.0);
                     PrintToConsole(attacker,"[W3S] %.2fX dmg by marksman shot",multi);
-                    
+
                 }
             }
         }
@@ -247,14 +273,14 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
     }
 
     if(!isWarcraft && ValidPlayer(victim,true)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
-    {    
+    {
         if(War3_GetRace(attacker)==thisRaceID)
         {
             new skill_level=War3_GetSkillLevel(attacker,thisRaceID,SKILL_DISARM);
             if(skill_level>0&&!Hexed(attacker,false))
             {
                 if(!W3HasImmunity(victim,Immunity_Skills) && !bDisarmed[victim]){
-                
+
                     if(  W3Chance(DisarmChance[skill_level]*W3ChanceModifier(attacker))  ){
                         War3_SetBuff(victim,bDisarm,thisRaceID,true);
                         CreateTimer(0.5,Undisarm,victim);
@@ -262,7 +288,7 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
                 }
             }
         }
-    }           
+    }
 }
 public Action:Undisarm(Handle:t,any:client){
     if(RaceDisabled)
@@ -310,8 +336,8 @@ public OnUltimateCommand(client,race,bool:pressed)
         if(skill_level>0)
         {
             if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,SKILL_TRUESIGHT,true)){
-                
-                
+
+
             }
         }
         else
@@ -330,5 +356,5 @@ public OnW3PlayerAuraStateChanged(client,tAuraID,bool:inAura,level){
         //DP(inAura?"In Aura":"Not in Aura");
         War3_SetBuff(client,bInvisibilityDenyAll,thisRaceID,inAura);
     }
-    
+
 }

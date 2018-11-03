@@ -8,17 +8,18 @@ public Plugin:myinfo =
     description = "Controls the levelbank"
 };
 
-int levelbank[MAXPLAYERSCUSTOM];
-ConVar hCvar_NewPlayerLevelbank;
-ConVar hCvarPrintLevelBank;
-ConVar hLevelup;
+new levelbank[MAXPLAYERSCUSTOM];
+new Handle:hCvar_NewPlayerLevelbank;
+
+new Handle:hCvarPrintLevelBank;
+new Handle:hLevelup;
 
 public OnPluginStart()
 {
     hCvar_NewPlayerLevelbank=CreateConVar("war3_new_player_levelbank","30","The amount of free levels a person gets that is new to the server (no xp record)");
     W3SetVar(hNewPlayerLevelbankCvar,hCvar_NewPlayerLevelbank);
         
-    hCvarPrintLevelBank=CreateConVar("war3_print_levelbank_spawn","0","Print how much you have in your level bank in chat every time you spawn (0=never, 1=always, 2=only when levelbank is full");
+    hCvarPrintLevelBank=CreateConVar("war3_print_levelbank_spawn","0","Print how much you have in your level bank in chat every time you spawn?");
     hLevelup=CreateConVar("war3_levelbank_method","0","Selects the method the levelbank uses the levelup a player(available: 0=just increase current race level(default) 1=give required XP to levelup)");
 
     RegAdminCmd("war3_addlevelbank",War3Source_CMD_addlevelbank,ADMFLAG_RCON,"Add to user(steamid)'s level bank");
@@ -210,14 +211,8 @@ public Action:War3Source_CMD_addlevelbank(client,args){
 }
 
 public OnWar3EventSpawn(client){
-    int printLevelBankCvar = hCvarPrintLevelBank.IntValue;
-    int levelsInBank = W3GetLevelBank(client);
-    if(printLevelBankCvar > 0 && levelsInBank > 0){
-        if(printLevelBankCvar == 2 && levelsInBank != hCvar_NewPlayerLevelbank.IntValue) {
-            // Player used some levels, no need to show levelbank information to him.
-            return;
-        }
-    
-        War3_ChatMessage(client,"%T","You have {amount} levels in your levelbank, say levelbank to use them",client,levelsInBank);
+    if(GetConVarInt(hCvarPrintLevelBank)&&W3GetLevelBank(client)>0){
+        War3_ChatMessage(client,"%T","You have {amount} levels in your levelbank, say levelbank to use them",client,W3GetLevelBank(client));
+        
     }
 }

@@ -8,7 +8,7 @@
 #include <sdktools_tempents>
 #include <sdktools_tempents_stocks>
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Shadow Hunter",
     author = "War3Source Team",
@@ -36,23 +36,23 @@ public OnWar3RaceDisabled(oldrace)
 new SKILL_HEALINGWAVE, SKILL_HEX, SKILL_WARD, ULT_VOODOO;
 
 //skill 1
-new Float:HealingWaveAmountArr[]={0.0,1.0,2.0,3.0,4.0};
-new Float:HealingWaveDistance[]={0.0,450.0,500.0,550.0,600.0};
+new Float:HealingWaveAmountArr[9]={0.0, 0.5, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5};
+new Float:HealingWaveDistance[9]={0.0,300.0,350.0,400.0,450.0,500.0,550.0,600.0,650.0};
 new ParticleEffect[MAXPLAYERSCUSTOM][MAXPLAYERSCUSTOM]; // ParticleEffect[Source][Destination]
 
 //skill 2
-new Float:HexChanceArr[]={0.00,0.025,0.05,0.075,0.100};
+new Float:HexChanceArr[9]={0.00, 0.015, 0.030, 0.045, 0.060, 0.075, 0.090, 0.100, 0.100};
 
 //skill 3
-new MaximumWards[]={0,1,2,3,4}; 
-new WardDamage[]={0,2,4,6,8};
+new MaximumWards[9]={0, 1, 2, 3, 4, 5, 6, 6, 6};
+new WardDamage[9]={0, 2, 4, 6, 8, 10, 10, 10, 10};
 
 new Float:LastThunderClap[MAXPLAYERSCUSTOM];
 
 //ultimate
 new Handle:ultCooldownCvar;
 
-new Float:UltimateDuration[]={0.0,0.66,1.0,1.33,1.66}; ///big bad voodoo duration
+new Float:UltimateDuration[9]={0.0, 0.33, 0.66, 1.00, 1.33, 1.66, 2.00, 2.33, 2.66}; ///big bad voodoo duration
 
 
 
@@ -61,13 +61,14 @@ new bool:bVoodoo[65];
 //new String:ultimateSound[]="war3source/divineshield.wav";
 //new String:wardDamageSound[]="war3source/thunder_clap.wav";
 
-new String:ultimateSound[256]; //="war3source/divineshield.mp3";
-new String:wardDamageSound[256]; //="war3source/thunder_clap.mp3";
-
+new String:ultimateSound[] ="*mora-wcs/war3source/divineshield.mp3";
+new String:wardDamageSound[] ="*mora-wcs/war3source/thunder_clap.mp3";
+new String:ultimateSound_FullPath[] ="sound/mora-wcs/war3source/divineshield.mp3";
+new String:wardDamageSound_FullPath[] ="sound/mora-wcs/war3source/thunder_clap.mp3";
 
 new bool:particled[MAXPLAYERSCUSTOM]; //heal particle
 
-
+new BeamSprite, HaloSprite, WARDSbeam;
 new AuraID;
 
 public OnPluginStart()
@@ -75,7 +76,7 @@ public OnPluginStart()
 
     ultCooldownCvar=CreateConVar("war3_hunter_voodoo_cooldown","20","Cooldown between Big Bad Voodoo (ultimate)");
     CreateTimer(1.0,CalcHexHealWaves,_,TIMER_REPEAT);
-    
+
     LoadTranslations("w3s.race.hunter.phrases.txt");
 }
 
@@ -83,27 +84,35 @@ public OnWar3LoadRaceOrItemOrdered(num)
 {
     if(num==60)
     {
-        
-        
+
+
         thisRaceID=War3_CreateNewRaceT("hunter");
-        SKILL_HEALINGWAVE=War3_AddRaceSkillT(thisRaceID,"HealingWave",false,4);
-        SKILL_HEX=War3_AddRaceSkillT(thisRaceID,"Hex",false,4);
-        SKILL_WARD=War3_AddRaceSkillT(thisRaceID,"SerpentWards",false,4);
-        ULT_VOODOO=War3_AddRaceSkillT(thisRaceID,"BigBadVoodoo",true,4); 
+        SKILL_HEALINGWAVE=War3_AddRaceSkillT(thisRaceID,"HealingWave",false,8);
+        SKILL_HEX=War3_AddRaceSkillT(thisRaceID,"Hex",false,8);
+        SKILL_WARD=War3_AddRaceSkillT(thisRaceID,"SerpentWards",false,8);
+        ULT_VOODOO=War3_AddRaceSkillT(thisRaceID,"BigBadVoodoo",true,8);
         War3_CreateRaceEnd(thisRaceID);
         AuraID=W3RegisterChangingDistanceAura("hunter_healwave");
-        
+
     }
 
 }
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(wardDamageSound, sizeof(wardDamageSound), "thunder_clap.mp3");
-    War3_AddSoundFolder(ultimateSound, sizeof(ultimateSound), "divineshield.mp3");
-
-    War3_AddCustomSound(ultimateSound);
-    War3_AddCustomSound(wardDamageSound);
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/lgtning.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/lgtning.vtf");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/halo01.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/halo01.vtf");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/laser.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/laser.vtf");
+	AddFileToDownloadsTable(ultimateSound_FullPath);
+	AddFileToDownloadsTable(wardDamageSound_FullPath);
+	BeamSprite=PrecacheModel("materials/mora-wcs/sprites/lgtning.vmt");
+	HaloSprite=PrecacheModel("materials/mora-wcs/sprites/halo01.vmt");
+	WARDSbeam = PrecacheModel("materials/mora-wcs/sprites/laser.vmt");
+	PrecacheSoundAny(ultimateSound);
+	PrecacheSoundAny(wardDamageSound);
 }
 
 public OnWar3PlayerAuthed(client)
@@ -126,7 +135,7 @@ public OnRaceChanged(client,oldrace,newrace)
         {
             W3SetPlayerAura(AuraID,client,HealingWaveDistance[level],level);
         }
-        
+
     }
     else{
         //PrintToServer("deactivate aura");
@@ -142,7 +151,7 @@ public OnSkillLevelChanged(client,race,skill,newskilllevel)
         return;
     }
 
-    
+
     if(race==thisRaceID && War3_GetRace(client)==thisRaceID)
     {
         if(skill==SKILL_HEALINGWAVE) //1
@@ -172,14 +181,14 @@ public OnUltimateCommand(client,race,bool:pressed)
             if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_VOODOO,true))
             {
                 bVoodoo[client]=true;
-                
+                W3FlashScreen(client,{153,153,0,20});
                 W3SetPlayerColor(client,thisRaceID,255,200,0,_,GLOW_ULTIMATE); //255,200,0);
                 CreateTimer(UltimateDuration[ult_level],EndVoodoo,client);
                 new Float:cooldown=    GetConVarFloat(ultCooldownCvar);
                 War3_CooldownMGR(client,cooldown,thisRaceID,ULT_VOODOO,_,_);
                 W3MsgUsingVoodoo(client);
-                W3EmitSoundToAll(ultimateSound,client);
-                W3EmitSoundToAll(ultimateSound,client);
+                EmitSoundToAllAny(ultimateSound,client);
+                EmitSoundToAllAny(ultimateSound,client);
             }
 
         }
@@ -255,14 +264,15 @@ public OnAbilityCommand(client,ability,bool:pressed)
                     new Float:location[3];
                     GetClientAbsOrigin(client, location);
                     War3_CreateWardMod(client, location, 60, 300.0, 0.5, "damage", SKILL_WARD, WardDamage);
-                    
+
+
                     W3MsgCreatedWard(client,War3_GetWardCount(client),MaximumWards[skill_level]);
                 }
             }
             else
             {
                 W3MsgNoWardsLeft(client);
-            }    
+            }
         }
     }
 }
@@ -285,8 +295,8 @@ public OnW3TakeDmgAllPre(victim,attacker,Float:damage)
         }
         new vteam=GetClientTeam(victim);
         new ateam=GetClientTeam(attacker);
-        
-        
+
+
         if(vteam!=ateam)
         {
             if(bVoodoo[victim])
@@ -320,6 +330,23 @@ public OnWar3EventSpawn(client){
 
     bVoodoo[client]=false;
     StopParticleEffect(client, true);
+
+    new currRace = War3_GetRace( client );
+    if( currRace == thisRaceID )
+    {
+      new color1[4]={216,175,14,255};
+      new color2[4]={50,50,0,255};
+      new Float:starterpos[3];
+      starterpos[2]+=15.0;
+      GetClientAbsOrigin(client,starterpos);
+      new Float:highpos[3];
+      highpos=starterpos;
+      highpos[2]=starterpos[2]+150.0;
+      TE_SetupBeamPoints(starterpos, highpos,WARDSbeam, HaloSprite , 0, 8, 6.0, 10.0, 10.0, 5, 0.0, color1, 70);
+      TE_SendToAll();
+      TE_SetupBeamRingPoint(starterpos, 250.0,251.0, BeamSprite,HaloSprite,0,15,6.0,5.0,0.0,color2,10,0);
+      TE_SendToAll();
+    }
 }
 
 public OnClientDisconnect(client)
@@ -386,12 +413,12 @@ StopParticleEffect(client, bKill)
         {
             decl String:className[64];
             decl String:className2[64];
-                
+
             if(IsValidEdict(ParticleEffect[client][i]))
                 GetEdictClassname(ParticleEffect[client][i], className, sizeof(className));
             if(IsValidEdict(ParticleEffect[i][client]))
             GetEdictClassname(ParticleEffect[i][client], className2, sizeof(className2));
-            
+
             if(StrEqual(className, "info_particle_system"))
             {
                 AcceptEntityInput(ParticleEffect[client][i], "stop");
@@ -401,7 +428,7 @@ StopParticleEffect(client, bKill)
                     ParticleEffect[client][i] = 0;
                 }
             }
-            
+
             if(StrEqual(className2, "info_particle_system"))
             {
                 AcceptEntityInput(ParticleEffect[i][client], "stop");

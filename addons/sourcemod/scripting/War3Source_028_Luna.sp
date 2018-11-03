@@ -3,7 +3,7 @@
 #include "W3SIncs/War3Source_Interface"
 #include <sdktools>
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Luna Moonfang",
     author = "War3Source Team",
@@ -11,23 +11,25 @@ public Plugin:myinfo =
 };
 
 new thisRaceID;
-new String:beamsnd[256]; // = "war3source/moonqueen/beam.mp3";
-new String:lunasnd2[256]; // = "weapons/flashbang/flashbang_explode2.wav";
+new String:beamsnd[] = "*mora-wcs/war3source/moonqueen/beam.mp3";
+new String:lunasnd2[]  = "*mora-wcs/war3source/moonqueen/flashbang_explode1.mp3";
+new String:beamsnd_FullPath[] = "sound/mora-wcs/war3source/moonqueen/beam.mp3";
+new String:lunasnd2_FullPath[]  = "sound/mora-wcs/war3source/moonqueen/flashbang_explode1.mp3";
 
 //skill is auto cast via chance
 //new Float:LucentChance[5] = {0.00,0.05,0.11,0.22,0.30};
-new LucentBeamMin[5] = {0, 3, 4, 5, 6};
-new LucentBeamMax[5] = {0, 7, 8, 9, 10};
+new LucentBeamMin[9] = {0, 2, 3, 4, 5, 6, 7, 8, 9};
+new LucentBeamMax[9] = {0, 6, 7, 8, 9, 10, 11, 12, 13};
 
-new Float:GlaiveRadius[5] = {0.0,250.0,300.0,350.0,400.0};
+new Float:GlaiveRadius[9] = {0.0, 250.0, 275.0, 300.0, 325.0, 350.0, 375.0, 400.0, 425.0};
 new Float:GlaiveChance = 0.22;
-new GlaiveDamage[5] = {0,4,6,8,12};
+new GlaiveDamage[9] = {0, 4, 5, 7, 8, 10, 11, 13, 15};
 
 new Float:BlessingRadius = 280.0;
-new BlessingIncrease[5] = {0,1,2,2,3};
+new BlessingIncrease[9] = {0,1,1,2,2,3,3,4,4};
 
-new Float:EclipseRadius=500.0;
-new EclipseAmount[5]= {0,4,6,8,10};
+new Float:EclipseRadius=600.0;
+new EclipseAmount[9]= {0, 5, 6, 7, 8, 9, 10, 11, 12};
 
 new SKILL_MOONBEAM,SKILL_BOUNCE,SKILL_AURA,ULT;
 new LightModel;
@@ -45,19 +47,24 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(beamsnd, sizeof(beamsnd), "moonqueen/beam.mp3");
-    if(GameCS()) {
-        War3_AddSoundFolder(lunasnd2, sizeof(lunasnd2), "flashbang_explode2.mp3");
-    } else {
-        War3_AddSoundFolder(lunasnd2, sizeof(lunasnd2), "moonqueen/flashbang_explode1.mp3");
-    }
+	AddFileToDownloadsTable(beamsnd_FullPath);
+	AddFileToDownloadsTable(lunasnd2_FullPath);
+	PrecacheSoundAny( beamsnd );
+	PrecacheSoundAny( lunasnd2 );
+	
+	AddFileToDownloadsTable("materials/mora-wcs/effects/combinemuzzle1.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/effects/combinemuzzle1.vtf");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/light_glow02.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/light_glow02.vtf");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/physbeam.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/physbeam.vtf");
+	
+	HaloSprite=War3_PrecacheHaloSprite();
+	CoreSprite = PrecacheModel( "materials/mora-wcs/effects/combinemuzzle1.vmt" );
+	MoonSprite = PrecacheModel( "materials/mora-wcs/sprites/light_glow02.vmt" );
+	XBeamSprite = PrecacheModel( "materials/mora-wcs/sprites/physbeam.vmt" );
     
-    War3_AddCustomSound( beamsnd );
-    War3_AddCustomSound( lunasnd2 );
-    
-    //BeamSprite=War3_PrecacheBeamSprite();
-    HaloSprite=War3_PrecacheHaloSprite();
-    if(War3_GetGame() == Game_CSGO) {
+    /*if(War3_GetGame() == Game_CSGO) {
         CoreSprite = PrecacheModel( "materials/effects/combinemuzzle1.vmt" );
         MoonSprite = PrecacheModel( "materials/sprites/light_glow02.vmt" );
         XBeamSprite = PrecacheModel( "materials/sprites/physbeam.vmt" );
@@ -70,7 +77,7 @@ public OnMapStart()
         XBeamSprite = PrecacheModel( "materials/sprites/XBeam2.vmt" );
         LightModel = PrecacheModel( "models/effects/vol_light.mdl" );
         //PrecacheModel("particle/fire.vmt");
-    }
+    }*/
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -79,16 +86,16 @@ public OnWar3LoadRaceOrItemOrdered(num)
     {
 
         thisRaceID=War3_CreateNewRaceT("luna");
-        SKILL_MOONBEAM=War3_AddRaceSkillT(thisRaceID,"LucentBeam",false,4);
-        SKILL_BOUNCE=War3_AddRaceSkillT(thisRaceID,"MoonGlaive",false,4);
-        SKILL_AURA=War3_AddRaceSkillT(thisRaceID,"LunarBlessing",false,4);
-        ULT=War3_AddRaceSkillT(thisRaceID,"Eclipse",true,4);
+        SKILL_MOONBEAM=War3_AddRaceSkillT(thisRaceID,"LucentBeam",false,8);
+        SKILL_BOUNCE=War3_AddRaceSkillT(thisRaceID,"MoonGlaive",false,8);
+        SKILL_AURA=War3_AddRaceSkillT(thisRaceID,"LunarBlessing",false,8);
+        ULT=War3_AddRaceSkillT(thisRaceID,"Eclipse",true,8);
         War3_CreateRaceEnd(thisRaceID);
-        
-        War3_AddAuraSkillBuff(thisRaceID, SKILL_AURA, iDamageBonus, BlessingIncrease, 
-                              "luna_blessing", BlessingRadius, 
+
+        War3_AddAuraSkillBuff(thisRaceID, SKILL_AURA, iDamageBonus, BlessingIncrease,
+                              "luna_blessing", BlessingRadius,
                               true);
-        
+
         // since we cant look up aura ids by shortname right now, do it this way ;)
         AuraID = W3RegisterAura("luna_blessing", BlessingRadius);
     }
@@ -98,9 +105,9 @@ public OnW3PlayerAuraStateChanged(client,aura,bool:inAura,level)
 {
     if(aura == AuraID)
     {
-        if(War3_GetGame() != Game_CSGO) 
+        if(War3_GetGame() != Game_CSGO)
         {
-            if(inAura == true && ValidPlayer(client, true)) 
+            if(inAura == true && ValidPlayer(client, true))
             {
                 decl Float:client_pos[3];
                 GetClientAbsOrigin(client, client_pos);
@@ -109,6 +116,24 @@ public OnW3PlayerAuraStateChanged(client,aura,bool:inAura,level)
             }
         }
     }
+}
+
+public OnWar3EventSpawn(client)
+{
+   new currRace = War3_GetRace( client );
+   if( currRace == thisRaceID )
+   {
+     decl Float:spawn_pos[3];
+     GetClientAbsOrigin(client, spawn_pos);
+     TE_SetupBeamRingPoint(spawn_pos, 1000.0, 40.0, CoreSprite, HaloSprite, 0, 3, 5.0, 90.0, 0.0, {255,255,255,255}, 10, 0);
+     TE_SendToAll();
+     TE_SetupBeamRingPoint(spawn_pos, 40.0, 1000.0, CoreSprite, HaloSprite, 0, 3, 5.0, 90.0, 0.0, {255,255,255,255}, 10, 0);
+     TE_SendToAll();
+     TE_SetupBeamRingPoint(spawn_pos, 400.0, 500.0, CoreSprite, HaloSprite, 0, 3, 5.0, 90.0, 0.0, {255,255,255,255}, 10, 0);
+     TE_SendToAll();
+     TE_SetupBeamRingPoint(spawn_pos, 200.0, 90.0, XBeamSprite, HaloSprite, 0, 3, 3.0, 100.0, 0.0, {128,0,255,255}, 10, 0);
+     TE_SendToAll(3.0);
+   }
 }
 
 public OnW3TakeDmgBullet( victim, attacker, Float:damage )
@@ -138,10 +163,10 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
                      TE_SetupBeamPoints(target_pos, start_pos, BlueSprite, HaloSprite, 0, 100, 2.0, 1.0, 3.0, 0, 0.0, {255,0,255,255}, 10);
                      TE_SendToAll();
                      TE_SetupBeamPoints(target_pos, start_pos, BlueSprite, HaloSprite, 0, 100, 2.0, 3.0, 5.0, 0, 0.0, {128,0,255,255}, 30);
-                     TE_SendToAll(2.0);    
+                     TE_SendToAll(2.0);
                      //TE_SetupBeamRingPoint(const Float:center[3], Float:Start_Radius, Float:End_Radius, ModelIndex(Precache), HaloIndex(Precache), StartFrame, FrameRate, Float:Life, Float:Width, Float:Amplitude, const Color[4], Speed, Flags);
                      TE_SetupBeamRingPoint(target_pos, 20.0, 90.0, XBeamSprite, HaloSprite, 0, 1, 1.0, 90.0, 0.0, {128,0,255,255}, 10, 0);
-                     TE_SendToAll(2.0);                
+                     TE_SendToAll(2.0);
                      TE_SetupBeamPoints(target_pos, start_pos, BlueSprite, HaloSprite, 0, 100, 2.0, 5.0, 7.0, 0, 0.0, {128,0,255,255}, 70);
                      TE_SendToAll(4.0);
                      TE_SetupBeamPoints(target_pos, start_pos, BlueSprite, HaloSprite, 0, 100, 2.0, 6.0, 8.0, 0, 0.0, {128,0,255,255}, 170);
@@ -203,7 +228,7 @@ public OnUltimateCommand( client, race, bool:pressed )
 
                 decl Float:StartPos[3];
                 GetClientAbsOrigin(client, StartPos);
-                StartPos[2]+=400.0;
+                StartPos[2]+=250.0;
                 TE_SetupGlowSprite(StartPos, MoonSprite, 5.0, 3.0, 255);
                 TE_SendToAll();
 
@@ -214,7 +239,7 @@ public OnUltimateCommand( client, race, bool:pressed )
                  es est_effect_08 #a 0 sprites/physcannon_blueflare1.vmt server_var(vector1) 5000 40 3 5 90 400 0 255 255 255 255 10 1
                  es est_effect_08 #a 0 sprites/physcannon_blueflare1.vmt server_var(vector1) 40 5000 3 5 90 400 0 255 255 255 255 10 1
                  es est_effect_08 #a 0 sprites/physcannon_blueflare1.vmt server_var(vector1) 400 500 3 5 90 400 0 255 255 255 255 10 1
-                 
+
                  est_Effect_08 <player Filter> <delay> <model> <center 'X Y Z'> <Start Radius> <End Radius> <framerate> <life> <width> <spread> <amplitude> <R> <G> <B> <A> <speed> <flags>
                  */
                 TE_SetupBeamRingPoint(StartPos, 1000.0, 40.0, CoreSprite, HaloSprite, 0, 3, 5.0, 90.0, 0.0, {255,255,255,255}, 10, 0);

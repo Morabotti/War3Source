@@ -89,10 +89,7 @@ PrepareSocket(Handle:plugin,SOCKETTYPE:type)
         
         decl String:data[8000];
         data[0]='\0';
-        
-        // note this used to be tagged Function: due to warning 237: coercing functions to and from primitives is unsupported and will be removed in the future
-		// we do not tag it anymore
-        new func;
+        new Function:func;
         if(type==HTTPGET){
             
             func=GetNativeCell(2); //callback;
@@ -110,7 +107,7 @@ PrepareSocket(Handle:plugin,SOCKETTYPE:type)
         SetTrieString(trie,"host", host);
         SetTrieString(trie,"path", path);
         SetTrieString(trie,"data", data);
-        SetTrieValue(trie,"func", func);
+        SetTrieValue(trie,"func", _:func);
         SetTrieValue(trie,"plugin", plugin);
         SetTrieString(trie,"response", "RESPONSE:");
         SetTrieValue(trie,"type", type);
@@ -252,10 +249,8 @@ public OnSocketDisconnected(Handle:socket, any:trie) {
         War3_LogInfo("Zero length socket return disconnect");
     }
     
-	// note this used to be tagged Function: due to warning 237: coercing functions to and from primitives is unsupported and will be removed in the future
-	// we do not tag it anymore
-    new func;
-    GetTrieValue(trie,"func", func);
+    new Function:func;
+    GetTrieValue(trie,"func", _:func);
     new Handle:plugin;
     GetTrieValue(trie,"plugin",plugin);
     
@@ -264,7 +259,7 @@ public OnSocketDisconnected(Handle:socket, any:trie) {
     CloseHandle(trie);
     trieCount--;
     
-    Call_StartFunction(plugin,Function:func);
+    Call_StartFunction(plugin,func);
     Call_PushCell(index>=0?1:0);
     Call_PushCell(0);
     Call_PushString(exploded[1]);

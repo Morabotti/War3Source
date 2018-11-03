@@ -1,0 +1,25 @@
+"Refract"
+{
+ 		"$refractamount" ".15"
+ 		"$bluramount" "1"
+ 		"$dudvmap" "effects/strider_pinch_dudv"
+ 		"$normalmap" "effects/strider_pinch_normal"
+		"$refracttint" "[2 2 2]"
+		
+
+//		"UnlitGeneric"
+//		{
+//			"$basetexture" "effects/tp_eyefx/tp_eyefx"
+//			"$translucent" "1"
+//		
+//			"Proxies"
+//			{
+//				"AnimatedTexture"
+//				{
+//					"animatedTextureVar" "$basetexture"
+//					"animatedTextureFrameNumVar" "$frame"
+//					"animatedTextureFrameRate" "30"
+//				}		
+//			}
+//		}
+}

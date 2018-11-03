@@ -1,7 +1,7 @@
 /**
  * File: War3Source_Interface.inc
  * Description: The big one that includes everything else
- * Author(s): War3Source Team  
+ * Author(s): War3Source Team
  */
 #pragma semicolon 1
 
@@ -25,7 +25,7 @@
 new String:interfaceVersion[]="1.2.4.1";
 
 stock dummy; //variable for dummies! Use this where ever u want for a dummy return
-stock String:dummystr[32]; //just a dummy string! 
+stock String:dummystr[32]; //just a dummy string!
 
 /**********************
  * CAUTION, THE War3 INTERFACE NOW HANDLES AskPluginLoad2Custom BECAUSE IT IS REQUIRED TO HANDLE CERTAIN TASKS
@@ -33,9 +33,9 @@ stock String:dummystr[32]; //just a dummy string!
  * Determines game mode
  * Mark Natives optional
  * Calls your own functions (hackish way) if you have them:
- * InitNativesForwards()   
+ * InitNativesForwards()
  * AskPluginLoad2Custom(Handle:myself,bool:late,String:error[],err_max);
- * So if you want to do something in AskPluginLoad2, implement public AskPluginLoad2Custom(...) instead. 
+ * So if you want to do something in AskPluginLoad2, implement public AskPluginLoad2Custom(...) instead.
  */
 public APLRes:AskPluginLoad2(Handle:plugin,bool:late,String:error[],err_max)
 {
@@ -88,10 +88,10 @@ forward APLRes:AskPluginLoad2Custom(Handle:plugin,bool:late,String:error[],err_m
 
 /**********************
  * Checks plugin to allow for silent failure
- * Called from APLRes:AskPluginLoad / War3Source main 
- *  
+ * Called from APLRes:AskPluginLoad / War3Source main
+ *
  * Return true to allow loading
- * Return false to silently disable loading 
+ * Return false to silently disable loading
  */
 forward LoadCheck();
 
@@ -130,7 +130,7 @@ stock SetSafeMenuTitle(Handle:menu, const String:fmt[], any:...)
   {
     Format(menuTitle, sizeof(menuTitle), " %s", menuTitle);
   }
-  
+
   SetMenuTitle(menu, menuTitle);
 }
 
@@ -154,7 +154,7 @@ native W3DropWeapon(client, weaponent);
 /**
  * Checks if we are in the freeze time. Certain games support this, like CS.
  * @return True if so, false if not.
- *  
+ *
  */
 #pragma deprecated
 native bool:War3_InFreezeTime();
@@ -182,7 +182,7 @@ native any:W3SetVar(W3Var:variabletoretrieve,any:value);
 /**
  * Registers a help command with the War3Source plugin for war3help
  * @param name: The name of the command. (max 64)
- * @param desc: The description of the command. (max 256) 
+ * @param desc: The description of the command. (max 256)
  * @noreturn
  */
 native War3_CreateHelpCommand(String:name[],String:desc[]);
@@ -193,12 +193,12 @@ native W3ClearSkillLevels(client, race);
 /**
  * Finds the best target within a player's view cone
  * Can be limited by max distance
- * function perfers closer target over a target that has less degrees 
+ * function perfers closer target over a target that has less degrees
  * @param client: Client index
  * @param max_distance: Optional, set to 0 to allow unlimited distance
  * @param include_friendlys: Optional, should we look for friendlys too?
  * @param cone_angle: Optional, view cone angle, SDK default is 23.0 degrees.
- * @param FilterFunction: Callback filter function, return false in this function to ignore entity.  
+ * @param FilterFunction: Callback filter function, return false in this function to ignore entity.
  */
 native War3_GetTargetInViewCone(client,Float:max_distance=0.0,bool:include_friendlys=false,Float:cone_angle=23.0,Function:FilterFunction=INVALID_FUNCTION);
 
@@ -237,7 +237,7 @@ stock bool:ValidRace(raceid_) {
 /**
  * Respawns a dead player.
  * @param client: Client's index.
- * @param ignore_dead_check: Optional, ignore dead checking. 
+ * @param ignore_dead_check: Optional, ignore dead checking.
  * @noreturn
  */
 native War3_SpawnPlayer(client,bool:ignore_dead_check=false);
@@ -249,7 +249,7 @@ native War3_SpawnPlayer(client,bool:ignore_dead_check=false);
  * @param pack_size: Size of datapack.
  * @param distance: Optional, how far is "near."
  * @return ADT array of results, otherwise INVALID_HANDLE.
- * DO NOT FORGET TO CloseHandle() the results if they don't equal INVALID_HANDLE!!!  
+ * DO NOT FORGET TO CloseHandle() the results if they don't equal INVALID_HANDLE!!!
  */
 stock Handle:War3_NearEntsByName(client,Handle:hEnts,pack_size,Float:distance=150.0)
 {
@@ -342,56 +342,56 @@ native bool:War3_CachedDucking(client);
 
 /**
  * Get cached weapon entity based on iterator.
- * This function is usually called from a loop. 
+ * This function is usually called from a loop.
  * @param client: Client index
- * @param weapon_iterator: Number from 0-9. 
+ * @param weapon_iterator: Number from 0-9.
  * @return Weapon entity, 0 if none.
  */
 native War3_CachedWeapon(client, weapon_iterator);
 
 /**
  * Get cached weapon entity "clip1" based on iterator.
- * This function is usually called from a loop. 
+ * This function is usually called from a loop.
  * @param client: Client index
- * @param weapon_iterator: Number from 0-9. 
+ * @param weapon_iterator: Number from 0-9.
  * @return Value of clip1.
  */
 native War3_CachedClip1(client, weapon_iterator);
 
 /**
  * Get cached ammo of a player with a specific weapon ID.
- * This function is usually called from a loop. 
+ * This function is usually called from a loop.
  * @param client: Client index
- * @param game_weapon_id: Game specific weapon identifier, this is constant for each weapon. 
+ * @param game_weapon_id: Game specific weapon identifier, this is constant for each weapon.
  * @return Value of iAmmo.
  */
 native War3_CachedAmmo(client, game_weapon_id);
 
 /**
  * Get cached weapon entity "clip1" of iterator, only changes when a player dies.
- * This function is usually called from a loop. 
+ * This function is usually called from a loop.
  * @param client: Client index
- * @param weapon_iterator: Number from 0-9. 
+ * @param weapon_iterator: Number from 0-9.
  * @return Value of clip1 from last death.
  */
 native War3_CachedDeadClip1(client, weapon_iterator);
 
 /**
  * Get cached ammo of a player with a specific weapon ID, only changes when a player dies.
- * This function is usually called from a loop. 
+ * This function is usually called from a loop.
  * @param client: Client index
- * @param game_weapon_id: Game specific weapon identifier, this is constant for each weapon. 
+ * @param game_weapon_id: Game specific weapon identifier, this is constant for each weapon.
  * @return Value of iAmmo from last death.
  */
 native War3_CachedDeadAmmo(client, game_weapon_id);
 
 /**
  * Get cached weapon name of iterator, only changes when a player dies.
- * This function is usually called from a loop, sets output_buffer to "" if no weapon at iterator. 
+ * This function is usually called from a loop, sets output_buffer to "" if no weapon at iterator.
  * @param client: Client index
  * @param weapon_iterator: Number from 0-9.
  * @param output_buffer: Output buffer
- * @param output_size: Size of output buffer.   
+ * @param output_size: Size of output buffer.
  * @noreturn
  */
 native War3_CachedDeadWeaponName(client,weapon_iterator,String:output_buffer[],output_size);
@@ -405,12 +405,12 @@ native War3_CachedDeadWeaponName(client,weapon_iterator,String:output_buffer[],o
  * The skill name of the skill will be in ready and not ready messages.
  * when a cooldown expires (by time, by death, by spawn, by force reset), it will forward to OnCooldownExpired(....) forward, use if u need to
  * @noreturn
- * 
- * Usually the first 4 parameters are enough  
+ *
+ * Usually the first 4 parameters are enough
  */
 native War3_CooldownMGR(client,Float:cooldownTime,raceid,skillNum, bool:resetOnSpawn=true,bool:printMsgOnExpireByTime=true);
 
-//tells the cooldown manager to create a predefined cooldown time when player spawns with that race. 
+//tells the cooldown manager to create a predefined cooldown time when player spawns with that race.
 //cooldown is created regardless of resetOnSpawn in War3_CooldownMGR(...) calls
 //only prints expired if client remains that race
 //set this ONCE when u register your skills
@@ -481,7 +481,7 @@ native War3_GetAimEndPoint(client,Float:endpos[3]);
 //get location of where the player is aiming (trace to the end of your crosshair) limited by distance
 native War3_GetAimTraceMaxLen(client,Float:endpos[3],Float:maxdistance);
 
-//simple weapon restriction:  pass "weapon_knife,weapon_hegrenade" to only allow these weapons, separated by comma. 
+//simple weapon restriction:  pass "weapon_knife,weapon_hegrenade" to only allow these weapons, separated by comma.
 //pass "" to allow all weapons again
 //c4 etc is automatically allowed
 //to override other restrictions, use a higher priority
@@ -506,7 +506,7 @@ native War3Failed(String:reason[]);
 /**
  * Use this for getting a chance modifier in OnWar3TakeDamage!!
  * This is a cvar based value used for lowering chance of skill activation when a weapon such as flamethrower inflicts damage many times over a period of time.
- * If you are making a skill that has a high chance, example 1 in 10, it is advised to change it to something like 10 in 100 if using GetRandomInt, however if you are using GetRandomFloat with the chance modifier*original chance then it shouldn't be an issue. 
+ * If you are making a skill that has a high chance, example 1 in 10, it is advised to change it to something like 10 in 100 if using GetRandomInt, however if you are using GetRandomFloat with the chance modifier*original chance then it shouldn't be an issue.
  * @param attacker: Attacker's client index.
  * @param inflictor: Inflictor entity index. (ie sentry gun)
  * @param damagetype: Type of damage.
@@ -571,7 +571,7 @@ Gets the skill level of a generic skill
 @customerRaceID = the matching race that is trying to use this generic skill
 @customerSkillID = the matching skill id for the race trying to use this as generic skill
 
-for example, if race 4 skill 3 is redirected as generic skill 2, 
+for example, if race 4 skill 3 is redirected as generic skill 2,
 you should have passed 2 as g_skill_id
 customerRaceID will be returned as 4
 customerSkillID returns 3
@@ -715,7 +715,6 @@ native War3_GetDependency(iRaceID, iSkill, SkillDependency:eInfo=ID);
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
- * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS 
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
@@ -723,7 +722,6 @@ native War3_GetDependency(iRaceID, iSkill, SkillDependency:eInfo=ID);
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
- * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS 
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
@@ -731,7 +729,6 @@ native War3_GetDependency(iRaceID, iSkill, SkillDependency:eInfo=ID);
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
- * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS 
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
@@ -739,7 +736,6 @@ native War3_GetDependency(iRaceID, iSkill, SkillDependency:eInfo=ID);
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
- * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS 
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
@@ -747,7 +743,11 @@ native War3_GetDependency(iRaceID, iSkill, SkillDependency:eInfo=ID);
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
- * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS 
+ * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
+ * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
+ * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
+ * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
+ * FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS FORWARDS
  */
 
 /*create an error displayed in various places at runtime*/
@@ -820,8 +820,8 @@ forward OnUltimateCommand(client,race,bool:pressed);
 
 /**
  * Gets called when the +ability# or -ability# command is called.
- * If its +ability or -ability (without a number), 0 is passed to ability. 
- * Isn't always for you, check War3_GetRace(client)==yourRace 
+ * If its +ability or -ability (without a number), 0 is passed to ability.
+ * Isn't always for you, check War3_GetRace(client)==yourRace
  * @param client: The client's index.
  * @param ability: The ability number.
  * @param pressed: If true, +ability#, false, -ability#.
@@ -928,10 +928,10 @@ forward OnWardExpire(wardindex, owner, behaviorID);
 
 #define MAX_MESSAGE_LENGTH 250
 
-/** 
+/**
  * Prints a message in the chat area with [War3Source] pre-appended.
  * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
- * 
+ *
  * @param client    Client index, pass 0 for message to all.
  * @param szMessage   Message (formatting rules).
  * @return      No return
@@ -962,10 +962,10 @@ stock War3_ChatMessage(client, const String:szMessage[], any:...)
   }
 }
 
-/** 
+/**
  * Prints a message in the chat area with [War3Source] pre-appended.
  * Support color tags: {default}, {green}, {olive}, {teamcolor}.
- * 
+ *
  * @param client    Client index, pass 0 for message to all.
  * @param author    Author index whose color will be used for teamcolor tag.
  * @param szMessage   Message (formatting rules).
@@ -1020,17 +1020,17 @@ stock bool:IS_PLAYER(x)
 
 /*
  There are two ways to get admin
- //need 
+ //need
  //good if you need the string to admin flag like "o" -> number
  id= native bool:GetAdminFlag(AdminId:id, AdminFlag:flag, AdmAccessMode:mode=Access_Effective);
- Admin_RCON,      
+ Admin_RCON,
  Admin_Root,
- 
+
  VS
- 
+
  //good if u know the access level
- GetUserFlagBits(client)  
- 
+ GetUserFlagBits(client)
+
  ADMFLAG_RCON
  ADMFLAG_ROOT
  */
@@ -1227,7 +1227,7 @@ public bool:SQL_FastQueryLogOnError(Handle:DB,const String:query[]) {
   return true;
 }
 
-//normal query like SQL_QUERY, database must be locked 
+//normal query like SQL_QUERY, database must be locked
 stock bool:SQL_War3_NormalQuery(Handle:DB,String:querystr[]) {
   new Handle:result= SQL_Query(DB, querystr);
   if(result==INVALID_HANDLE) {
@@ -1291,8 +1291,8 @@ stock AddColumn(Handle:DB,const String:columnname[],const String:datatype[],cons
  * "changerace foo foo2" will return { 1="changerace",  2="foo",3="foo2" }
  * "changerace " will return {1="changerace"}
  * returns false if given tokenum is invalid (0, or 4 in first example)
- *  
- */ 
+ *
+ */
 stock bool:StrToken(const String:inputstr[],tokennum,String:outputstr[],maxlen)
 {
   new String:buf[maxlen+1];
@@ -1337,7 +1337,7 @@ stock StrTokenCount(const String:input[])
 }
 
 //Grab the front end of a string, separated by delimter, delimiter example string ","
-//foo,bar,lol => chopped=foo AND input=bar,lol 
+//foo,bar,lol => chopped=foo AND input=bar,lol
 //case sensitive delimiter
 //returns false if nothing is found, or end
 stock bool:ChopString(String:input[],String:delimiter[],String:chopped[],choppedmaxlen)
@@ -1365,7 +1365,7 @@ stock bool:ChopString(String:input[],String:delimiter[],String:chopped[],chopped
             return false;
         }
     }
-    
+
 }
 stock MinInt(a,b){
     return a>b?b:a;
@@ -1435,7 +1435,7 @@ stock W3PrintSkillDmgHintConsole(victim = 0, attacker, damage, SKILLNUM) {
  stock W3PrintSkillDmgChat(victim,attacker,damage,String:skillname[]){
  GetClientName(victim,zzname,sizeof(zzname));
  War3_ChatMessage(attacker,"%T","You did +{amount} damage to {player} with {skill}",attacker,damage,zzname,skillname);
- 
+
  if(victim>0){
  GetClientName(attacker,zzname,sizeof(zzname));
  War3_ChatMessage(victim,"%T","{player} did {amount} damage to you with {skill}",victim,zzname,damage,skillname);
@@ -1607,14 +1607,14 @@ stock DPP(Plugin:plugin)
 stock Handle:FindPluginByFileCustom(const String:filename[])
 {
     decl String:buffer[256];
-    
+
     new Handle:iter = GetPluginIterator();
     new Handle:pl;
-    
+
     while (MorePlugins(iter))
     {
         pl = ReadPlugin(iter);
-        
+
         GetPluginFilename(pl, buffer, sizeof(buffer));
         //DP("%s",buffer);
         if (StrContains(buffer,filename,false)>-1) //not case sensitive
@@ -1623,9 +1623,9 @@ stock Handle:FindPluginByFileCustom(const String:filename[])
             return pl;
         }
     }
-    
+
     CloseHandle(iter);
-    
+
     return INVALID_HANDLE;
 }
 
@@ -1762,9 +1762,9 @@ stock CheckRaceTeamLimit(raceid, team){
     if(cvar>-1){
       W3GetCvar(cvar,cvarvalue,sizeof(cvarvalue));
     }
-    
+
     War3_LogInfo("race %s blocked on client %d due to restrictions limit %d (CheckRaceTeamLimit)  %s %s",racename,target,W3GetRaceMaxLimitTeam(raceid,team),cvarstr,cvarvalue);
-    
+
     W3CreateEvent(DoShowChangeRaceMenu,target);
   }
 }
@@ -1775,7 +1775,7 @@ stock CheckRaceTeamLimit(raceid, team){
 stock War3_AddSoundFolder(String:sBaseString[], maxlength, String:sSoundFile[])
 {
   Format(sBaseString, maxlength, "war3source/%s", sSoundFile);
-  
+
   War3_LogInfo("Constructed sound path: \"%s\"", sBaseString);
 }
 
@@ -1856,7 +1856,7 @@ stock War3_GetHintSound(String:sSoundFile[], maxlength)
  * @param sound     Name of the sound to download and precache.
  * @param precache    If precache is true the file will be precached.
  * @param preload   If preload is true the file will be precached before level startup.
- * 
+ *
  * @return True if successfully precached, false otherwise.
  */
 
@@ -1870,7 +1870,7 @@ stock bool:War3_PrecacheSound(String:sound[])
     return true;
   }
   else{
-    PrintToServer("Fail War3_PrecacheSound %s",longsound);  
+    PrintToServer("Fail War3_PrecacheSound %s",longsound);
   }
   return false;
 }

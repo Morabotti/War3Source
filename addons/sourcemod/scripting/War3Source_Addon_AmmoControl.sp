@@ -6,7 +6,7 @@
 
 #include <cstrike>
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Addon - Ammo Control",
     author = "War3Source Team",
@@ -51,17 +51,17 @@ public OnPluginStart()
 {
     // Offsets
     g_iOffsetPrimaryAmmoType = FindSendPropInfo("CBaseCombatWeapon", "m_iPrimaryAmmoType");
-    g_iOffsetActiveWeapon = FindSendPropInfo("CBasePlayer", "m_hActiveWeapon");
-    g_iOffsetClip = FindSendPropInfo("CBaseCombatWeapon", "m_iClip1");
-    g_iOffsetAmmo = FindSendPropInfo("CCSPlayer", "m_iAmmo");
-    
+    g_iOffsetActiveWeapon = FindSendPropOffs("CBasePlayer", "m_hActiveWeapon");
+    g_iOffsetClip = FindSendPropOffs("CBaseCombatWeapon", "m_iClip1");
+    g_iOffsetAmmo = FindSendPropOffs("CCSPlayer", "m_iAmmo");
+
     // Convars
-    CreateConVar("war3_ammocontrol_version", PLUGIN_VERSION, "Ammo Control Version", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+    CreateConVar("war3_ammocontrol_version", PLUGIN_VERSION, "Ammo Control Version", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
     g_hCvarEnable = CreateConVar("war3_ammocontrol_enable", "1", "Enable/Disable Ammo Control", _, true, 0.0, true, 1.0);
-    
+
     // Convar Hooks
     HookConVarChange(g_hCvarEnable, OnConVarChange);
-    
+
     // Commands
     RegConsoleCmd("buy", BuyCheck);
     RegConsoleCmd("rebuy", BuyCheck);
@@ -72,7 +72,7 @@ public Action:BuyCheck(client, args)
 {
     if (!g_bCvar_Enable)
         return Plugin_Continue;
-    
+
     CreateTimer(0.1, UpdateWeaponAmmo, client);
     return Plugin_Continue;
 }
@@ -97,7 +97,7 @@ public OnGameFrame()
 {
     if (!g_bCvar_Enable)
         return;
-    
+
     for (new i = 1; i < MaxClients; i++)
     {
         if (IsClientInGame(i) && IsPlayerAlive(i))
@@ -109,19 +109,19 @@ public OnGameFrame()
                 GetEdictClassname(iWeapon, sWeaponName, sizeof(sWeaponName));
                 if (StrContains(sWeaponName, "weapon_", false) == -1)
                     continue;
-                
+
                 if (g_bDoneRealoading[i])
                 {
                     new iCurrentClip = GetEntData(iWeapon, g_iOffsetClip);
-                    
+
                     // Reload success
                     if (iCurrentClip != g_iClip[i])
                         RecalculateWeaponClip(i, iWeapon, g_iClip[i], iCurrentClip);
                     g_bDoneRealoading[i] = false;
                 }
-                
+
                 new bool:bIsReloading = bool:GetEntProp(iWeapon, Prop_Data, "m_bInReload");
-                
+
                 // Player had just started to reload
                 if (bIsReloading && !g_bIsReloading[i])
                 {
@@ -147,15 +147,15 @@ public RecalculateWeaponClip(client, weapon, oldclip, newclip)
 {
     if (g_iWeaponClip[client] == -1)
         return;
-    
+
     decl String:sWeaponName[64];
     GetEdictClassname(weapon, sWeaponName, sizeof(sWeaponName));
-    
+
     decl String:sObserveWeaponName[64];
     new iObserveWeapon = GetPlayerWeaponSlot(client, g_iWeaponSlot[client]);
     if (iObserveWeapon > 0 && IsValidEdict(iObserveWeapon))
         GetEdictClassname(iObserveWeapon, sObserveWeaponName, sizeof(sObserveWeaponName));
-    
+
     if (g_iWeaponSlot[client] == ALLOW_ALL_WEAPONS || StrEqual(sWeaponName, g_sWeaponName[client], false) || StrEqual(sWeaponName, sObserveWeaponName, false))
     {
         new ammotype = GetEntData(weapon, g_iOffsetPrimaryAmmoType);
@@ -164,7 +164,7 @@ public RecalculateWeaponClip(client, weapon, oldclip, newclip)
         new allowadd = newammo < addclip ? newammo : addclip;
         newammo -= oldclip > newclip ? g_iWeaponClip[client] - oldclip : allowadd;
         newclip += allowadd;
-        
+
         SetEntData(client, g_iOffsetAmmo + (ammotype * 4), newammo);
         SetEntData(weapon, g_iOffsetClip, newclip);
     }
@@ -174,13 +174,13 @@ public Action:UpdateWeaponAmmo(Handle:timer, any:client)
 {
     if (!IsClientInGame(client))
         return;
-    
+
     if (!IsPlayerAlive(client))
         return;
-    
+
     if (g_iWeaponSlot[client] < 0)
         return;
-    
+
     for (new i = 0; i < 4; i++)
     {
         new weapon = GetPlayerWeaponSlot(client, i);
@@ -188,12 +188,12 @@ public Action:UpdateWeaponAmmo(Handle:timer, any:client)
         {
             decl String:sWeaponName[64];
             GetEdictClassname(weapon, sWeaponName, sizeof(sWeaponName));
-            
+
             decl String:sObserveWeaponName[64];
             new iObserveWeapon = GetPlayerWeaponSlot(client, g_iWeaponSlot[client]);
             if (iObserveWeapon > 0 && IsValidEdict(iObserveWeapon))
                 GetEdictClassname(iObserveWeapon, sObserveWeaponName, sizeof(sObserveWeaponName));
-            
+
             if (StrEqual(sWeaponName, g_sWeaponName[client], false) || g_iWeaponSlot[client] == ALLOW_ALL_WEAPONS || StrEqual(sWeaponName, sObserveWeaponName, false))
             {
                 if (g_iWeaponAmmo[client] != -1)
@@ -242,7 +242,7 @@ stock SetAmmoControl(client, String:weapon[64], ammo = -1, clip = -1, bool:updat
 {
     if (!IsClientInGame(client))
         return;
-    
+
     if (ammo < 0 && clip < 0)
     {
         g_sWeaponName[client] = "";
@@ -251,7 +251,7 @@ stock SetAmmoControl(client, String:weapon[64], ammo = -1, clip = -1, bool:updat
         g_iWeaponSlot[client] = -1;
         return;
     }
-    
+
     if (ammo < 0)
         ammo = -1;
     else
@@ -260,10 +260,10 @@ stock SetAmmoControl(client, String:weapon[64], ammo = -1, clip = -1, bool:updat
         clip = -1;
     else
         g_iWeaponClip[client] = clip;
-    
+
     if (StrContains(weapon, "weapon_", false) == -1)
         Format(weapon, sizeof(weapon), "weapon_%s", weapon);
-    
+
     if (StrContains(weapon, "weapon_all", false) == 0)
         g_iWeaponSlot[client] = ALLOW_ALL_WEAPONS;
     else if (StrContains(weapon, "weapon_primary", false) == 0)
@@ -274,9 +274,9 @@ stock SetAmmoControl(client, String:weapon[64], ammo = -1, clip = -1, bool:updat
         g_iWeaponSlot[client] = CS_SLOT_GRENADE;
     else
         g_iWeaponSlot[client] = ALLOW_SPECIFIC_WEAPON;
-    
+
     strcopy(g_sWeaponName[client], sizeof(g_sWeaponName), weapon);
-    
+
     if (update)
         CreateTimer(0.1, UpdateWeaponAmmo, client);
 }
@@ -297,14 +297,14 @@ public Native_GiveWeaponAmmo(Handle:plugin, numParams)
     new weapon = GetNativeCell(2);
     new ammo = -1;
     new clip = -1;
-    
+
     if (numParams > 2)
     {
         ammo = GetNativeCell(3);
         if (numParams > 3)
             clip = GetNativeCell(4);
     }
-    
+
     GiveWeaponAmmo(client, weapon, ammo, clip);
 }
 
@@ -315,7 +315,7 @@ public Native_SetAmmoControl(Handle:plugin, numParams)
     new ammo = -1;
     new clip = -1;
     new bool:update = false;
-    
+
     if (numParams > 1)
     {
         GetNativeString(2, weapon, sizeof(weapon));
@@ -330,6 +330,6 @@ public Native_SetAmmoControl(Handle:plugin, numParams)
             }
         }
     }
-    
+
     SetAmmoControl(client, weapon, ammo, clip, update);
 }

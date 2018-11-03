@@ -10,7 +10,12 @@ public Plugin:myinfo =
     description="Engine for generic skills"
 };
 
-new String:explosionSound1[256];
+new String:explosionSound1[] = "*mora-wcs/war3source/particle_suck1.mp3";
+new String:explosionSound1_FullPath[] = "sound/mora-wcs/war3source/particle_suck1.mp3";
+new String:explosionSound2[] = "*mora-wcs/weapons/morabotti/explode1.mp3";
+new String:explosionSound2_FullPath[] = "sound/mora-wcs/weapons/morabotti/explode1.mp3";
+new String:explosionSound3[] = "*mora-wcs/weapons/morabotti/explode5.mp3";
+new String:explosionSound3_FullPath[] = "sound/mora-wcs/weapons/morabotti/explode5.mp3";
 
 
 #define MAXWARDS 64*4 //on map LOL
@@ -37,18 +42,22 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(explosionSound1, sizeof(explosionSound1), "particle_suck1.mp3");
-    War3_AddCustomSound(explosionSound1);
+    AddFileToDownloadsTable(explosionSound1_FullPath);
+    PrecacheSoundAny( explosionSound1 );
     
     if(GAMETF)
     {
-        ExplosionModel=PrecacheModel("materials/particles/explosion/explosionfiresmoke.vmt",false);
-        PrecacheSoundAny("weapons/explode1.wav",false);
+        //ExplosionModel=PrecacheModel("materials/particles/explosion/explosionfiresmoke.vmt",false);
+        AddFileToDownloadsTable( explosionSound2_FullPath );
+        PrecacheSoundAny( explosionSound2 );
     }
     else
     {
-        ExplosionModel=PrecacheModel("materials/sprites/zerogxplode.vmt",false);
-        PrecacheSoundAny("weapons/explode5.wav",false);
+    	AddFileToDownloadsTable( "materials/mora-wcs/sprites/zerogxplode.vmt" );
+    	AddFileToDownloadsTable( "materials/mora-wcs/sprites/zerogxplode.vtf" );
+        ExplosionModel=PrecacheModel("materials/mora-wcs/sprites/zerogxplode.vmt",false);
+        AddFileToDownloadsTable( explosionSound3_FullPath );
+        PrecacheSoundAny( explosionSound3 );
     }
 
     BeamSprite=War3_PrecacheBeamSprite();
@@ -136,11 +145,11 @@ public Action:SuicideAction(Handle:timer,any:client)
             
             if(GAMETF)
             {
-                EmitSoundToAllAny("weapons/explode1.wav",client);
+                EmitSoundToAllAny(explosionSound2,client);
             }
             else
             {
-                EmitSoundToAllAny("weapons/explode5.wav",client);
+                EmitSoundToAllAny(explosionSound3,client);
             }
         }
         new bool:friendlyfire = GetConVarBool(FindConVar("mp_friendlyfire"));

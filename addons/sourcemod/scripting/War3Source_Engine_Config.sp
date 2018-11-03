@@ -84,7 +84,7 @@ public OnWar3PluginReady()
     //ReloadConfig();
 }
 
-stock ReloadConfig()
+ReloadConfig()
 {
     if(g_hActualRaceValues != INVALID_HANDLE) 
     {
@@ -743,7 +743,7 @@ GetRealNativeStringLength(index, &length)
     length++;
 }
 
-stock KvMergeSubkeys(Handle:origin, Handle:dest)
+KvMergeSubkeys(Handle:origin, Handle:dest)
 {
     new String:section[256];
     do

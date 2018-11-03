@@ -1,5 +1,5 @@
 // Release date is based on Month.Day.Year of when it was last changed
-#define RELEASE_DATE "5/10/2014"
+#define RELEASE_DATE "1/33/07"
 
 /*  This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ new Handle:hRaceLimitEnabled;
 new Handle:hChangeGameDescCvar;
 new Handle:hUseMetric;
 new Handle:introclannamecvar;
-new Handle:clanurl;
+//new Handle:clanurl;
 
 new Handle:hLoadWar3CFGEveryMapCvar;
 new bool:war3source_config_loaded;
@@ -172,14 +172,14 @@ public APLRes:AskPluginLoad2Custom(Handle:myself,bool:late,String:error[],err_ma
 
     new String:version[64];
     Format(version, sizeof(version), "%s by the War3Source Team", VERSION_NUM);
-    CreateConVar("war3_version", version, "War3Source version.", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-    CreateConVar("a_war3_version", version, "War3Source version.", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-    CreateConVar("war3_branch", BRANCH, "War3Source branch.", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-    CreateConVar("war3_buildnumber", BUILD_NUMBER, "War3Source build number.", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-    CreateConVar("war3_release", RELEASE_DATE, "War3Source version release date.", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+    CreateConVar("war3_version", version, "War3Source version.", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+    CreateConVar("a_war3_version", version, "War3Source version.", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+    CreateConVar("war3_branch", BRANCH, "War3Source branch.", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+    CreateConVar("war3_buildnumber", BUILD_NUMBER, "War3Source build number.", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+    CreateConVar("war3_release", RELEASE_DATE, "War3Source version release date.", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
     CreateNative("W3GetW3Version", NW3GetW3Version);
-    CreateNative("W3GetW3Revision", NW3GetW3Revision);  
+    CreateNative("W3GetW3Revision", NW3GetW3Revision);
 
     if(!War3Source_InitForwards())
     {
@@ -211,12 +211,12 @@ public OnPluginStart()
 War3Source_InitCVars()
 {
     introclannamecvar = CreateConVar("war3_introclanname", "war3_introclanname", "Intro menu clan name (welcome to 'YOUR CLAN NAME' War3Source server!)");
-    clanurl = CreateConVar("war3_clanurl", "www.ownageclan.Com (set war3_clanurl)", "The url to display on intro menu");
+    //clanurl = CreateConVar("war3_clanurl", "www.ownageclan.Com (set war3_clanurl)", "The url to display on intro menu");
     hChangeGameDescCvar = CreateConVar("war3_game_desc", "1", "change game description to war3source? does not affect player connect");
 
     hLoadWar3CFGEveryMapCvar = CreateConVar("war3_load_war3source_cfg_every_map", "1", "May help speed up map changes if disabled.");
 
-    hRaceLimitEnabled = CreateConVar("war3_racelimit_enable", "1", "Should race limit restrictions per team be enabled");
+    hRaceLimitEnabled = CreateConVar("war3_racelimit_enable", "0", "Should race limit restrictions per team be enabled");
     W3SetVar(hRaceLimitEnabledCvar, hRaceLimitEnabled);
 
     hUseMetric = CreateConVar("war3_metric_system", "1", "Do you want use metric system? 1-Yes, 0-No");
@@ -293,7 +293,7 @@ public OnMapStart()
 {
     DoWar3InterfaceExecForward();
 
-
+    
     DelayedWar3SourceCfgExecute();
     OneTimeForwards();
 }
@@ -576,15 +576,6 @@ War3Source_IntroMenu(client)
 
     new String:buf[64];
     Format(buf, sizeof(buf), "%T", "ForHelpIntro", client);
-    AddMenuItem(introMenu, "exit", buf);
-
-    GetConVarString(clanurl, buf, sizeof(buf));
-    if(strlen(buf))
-    {
-        AddMenuItem(introMenu, "exit", buf);
-    }
-
-    Format(buf, sizeof(buf), "www.war3source.com");
     AddMenuItem(introMenu, "exit", buf);
     DisplayMenu(introMenu, client, MENU_TIME_FOREVER);
 }

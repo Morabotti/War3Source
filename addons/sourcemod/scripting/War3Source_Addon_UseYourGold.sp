@@ -14,7 +14,7 @@ new Handle:g_hItemToBuyCvar;
 
 public OnPluginStart()
 {
-    g_hItemToBuyCvar = CreateConVar("war3_autobuy_on_max_currency", "lace", "Shortname for the item to buy when you have max currency");
+    g_hItemToBuyCvar = CreateConVar("war3_autobuy_on_max_currency", "bigtome", "Shortname for the item to buy when you have max currency");
     LoadTranslations("w3s.addon.useyourmoney.phrases.txt");
 }
 

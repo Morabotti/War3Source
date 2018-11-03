@@ -17,7 +17,7 @@ public OnWar3Event(W3EVENT:event,client){
 ShowWar3Menu(client){    
     new Handle:war3Menu=CreateMenu(War3Source_War3Menu_Select);
     SetSafeMenuTitle(war3Menu,"%T","[War3Source] Choose a task",client);
-    new limit=9;
+    new limit=10;
     new String:transbuf[32];
     new String:menustr[100];
     for(new i=0;i<=limit;i++)
@@ -45,47 +45,49 @@ public War3Source_War3Menu_Select(Handle:menu,MenuAction:action,client,selection
         {
             switch(selection)
             {
-                case 0: // war3help
+                case 0: // shopmenu
                 {
-                    W3CreateEvent(DoShowHelpMenu,client);
+					W3CreateEvent(DoShowShopMenu,client);
                 }
-                case 1: // changerace
+                case 1: // itemsinfo
                 {
-                    W3CreateEvent(DoShowChangeRaceMenu,client);
+					W3CreateEvent(DoShowItemsInfoMenu,client);
                 }
                 case 2: // skillsinfo
                 {
                     W3ShowSkillsInfo(client);
                 }
-                case 3: // raceinfo
+                case 3: // resetskills
                 {
+					W3CreateEvent(DoResetSkills,client);
+                }
+                case 4: // spendskills
+                {
+					W3CreateEvent(DoShowSpendskillsMenu,client);
+                }
+                case 5: // changerace
+                {
+                    W3CreateEvent(DoShowChangeRaceMenu,client);
+                }
+                case 6: // raceinfo
+                {        
                     W3CreateEvent(DoShowRaceinfoMenu,client);
                 }
-                case 4: // raceinfo
+                case 7: // playerinfo
                 {
-                    W3CreateEvent(DoShowPlayerinfoMenu,client);
+                   W3CreateEvent(DoShowPlayerinfoMenu,client);
                 }
-                case 5: // resetskills
+                case 8: // war3help
                 {
-                    W3CreateEvent(DoResetSkills,client);
+                    W3CreateEvent(DoShowHelpMenu,client);
                 }
-                case 6: // spendskills
-                {        
-                    W3CreateEvent(DoShowSpendskillsMenu,client);
-                }
-                
-                case 7: // shopmenu
+                case 9: // levebank
                 {
-                    W3CreateEvent(DoShowShopMenu,client);
-                }
-                case 8: // itemsinfo
-                {
-                    W3CreateEvent(DoShowItemsInfoMenu,client);
-                }
-                case 9:
-                {
-                    
                     W3CreateEvent(DoShowLevelBank,client);
+                }
+				case 10: // shopmenu2
+                {
+                    W3CreateEvent(DoShowShopMenu2,client);
                 }
             }
         }

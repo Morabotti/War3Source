@@ -1,0 +1,9 @@
+"Refract"
+{
+	"Refract_DX60"
+	{
+		"$fallbackmaterial" "effects\phantomvision"
+	}
+
+	"$REFRACTTINTtexture" "effects\phantomvision"
+}

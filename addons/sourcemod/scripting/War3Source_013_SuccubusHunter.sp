@@ -8,7 +8,7 @@
 
 #include "W3SIncs/War3Source_Interface"
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Succubus Hunter",
     author = "War3Source Team",
@@ -44,6 +44,9 @@ new ValveGameEnum:g_GameType;
 //new BeamSprite;
 new Laser;
 
+new String:UltSound[] = "*mora-wcs/war3source/brood/hunger.mp3";
+new String:UltSound_FullPath[] = "sound/mora-wcs/war3source/brood/hunger.mp3";
+
 new bool:lastframewasground[MAXPLAYERSCUSTOM];
 new Handle:ultCooldownCvar;
 new Handle:totemCurrencyCvar;
@@ -52,10 +55,12 @@ new Float:assaultcooldown=10.0;
 
 public OnMapStart()
 {
-    //PrecacheSound("npc/fast_zombie/claw_strike1.wav");
-    PrecacheModel("models/gibs/hgibs.mdl", true);
-    //BeamSprite=PrecacheModel("materials/sprites/purpleglow1.vmt");
-    Laser=PrecacheModel("materials/sprites/laserbeam.vmt");
+	AddFileToDownloadsTable(UltSound_FullPath);
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/laserbeam.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/sprites/laserbeam.vtf");
+	PrecacheModel("models/gibs/hgibs.mdl", true);
+	Laser=PrecacheModel("materials/mora-wcs/sprites/laserbeam.vmt");
+	PrecacheSoundAny(UltSound);
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -63,38 +68,38 @@ public OnWar3LoadRaceOrItemOrdered(num)
     if(num==130)
     {
         thisRaceID=War3_CreateNewRaceT("succubus");
-        
-        SKILL_HEADHUNTER = War3_AddRaceSkillT(thisRaceID, "HeadHunter", false,_,"0-20%");    
-        SKILL_TOTEM = War3_AddRaceSkillT(thisRaceID, "TIncantation", false);    
+
+        SKILL_HEADHUNTER = War3_AddRaceSkillT(thisRaceID, "HeadHunter", false,_,"0-20%");
+        SKILL_TOTEM = War3_AddRaceSkillT(thisRaceID, "TIncantation", false);
         SKILL_ASSAULT = War3_AddRaceSkillT(thisRaceID, "ATackle", false);
         ULT_TRANSFORM = War3_AddRaceSkillT(thisRaceID, "DTransformation", true);
         War3_CreateRaceEnd(thisRaceID);
-        
+
     }
 }
 
 public OnPluginStart()
 {
-    m_vecVelocity_0 = FindSendPropInfo("CBasePlayer","m_vecVelocity[0]");
-    
+    m_vecVelocity_0 = FindSendPropOffs("CBasePlayer","m_vecVelocity[0]");
+
     //HookEvent("player_hurt",PlayerHurtEvent);
     //HookEvent("player_death",PlayerDeathEvent);
-    
+
     if(GAMECSANY)
     {
         HookEvent("player_jump",PlayerJumpEvent);
-        m_vecVelocity_1 = FindSendPropInfo("CBasePlayer","m_vecVelocity[1]");
-        m_vecBaseVelocity = FindSendPropInfo("CBasePlayer","m_vecBaseVelocity");
+        m_vecVelocity_1 = FindSendPropOffs("CBasePlayer","m_vecVelocity[1]");
+        m_vecBaseVelocity = FindSendPropOffs("CBasePlayer","m_vecBaseVelocity");
     }
-    
+
     AddCommandListener(SayCommand, "say");
     AddCommandListener(SayCommand, "say_team");
-    
-    m_iAccount = FindSendPropInfo("CCSPlayer", "m_iAccount");
-    
+
+    m_iAccount = FindSendPropOffs("CCSPlayer", "m_iAccount");
+
     ultCooldownCvar=CreateConVar("war3_succ_ult_cooldown","20","Cooldown for succubus ultimate");
     totemCurrencyCvar=CreateConVar("war3_succ_totem_currency","0","Currency to use for totem | 0=currency, 1=gold, 2=money");
-    
+
     LoadTranslations("w3s.race.succubus.phrases.txt");
 }
 public OnRaceChanged(client,oldrace,newrace){
@@ -114,35 +119,35 @@ public OnWar3EventSpawn(client)
         return;
     }
 
-    new race=War3_GetRace(client); 
-    if (race==thisRaceID) 
+    new race=War3_GetRace(client);
+    if (race==thisRaceID)
     {
         m_IsULT_TRANSFORMformed[client]=false;
         War3_SetBuff(client,fMaxSpeed,thisRaceID,1.0);
-        War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.0);    
-        
-    
-        
-        new skillleveltotem=War3_GetSkillLevel(client,race,SKILL_TOTEM); 
+        War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.0);
+
+
+
+        new skillleveltotem=War3_GetSkillLevel(client,race,SKILL_TOTEM);
         if (skillleveltotem )
         {
             new maxhp = War3_GetMaxHP(client);
-            new hp, dollar, xp; 
+            new hp, dollar, xp;
             switch(skillleveltotem)
             {
-                case 1: 
+                case 1:
                 {
                     hp=RoundToNearest(float(maxhp) * 0.01);
                     dollar=25;
                     xp=1;
                 }
-                case 2: 
+                case 2:
                 {
                     hp=RoundToNearest(float(maxhp) * 0.01);
                     dollar=30;
                     xp=2;
                 }
-                case 3: 
+                case 3:
                 {
                     hp=RoundToNearest(float(maxhp) * 0.02);
                     dollar=35;
@@ -155,30 +160,30 @@ public OnWar3EventSpawn(client)
                     xp=5;
                 }
             }
-            
+
             hp *= skulls[client];
             dollar *= skulls[client];
             xp *= skulls[client];
-            
-            if(GameCS()){    
+
+            if(GameCS()){
                 new old_health=GetClientHealth(client);
                 SetEntityHealth(client,old_health+hp);
             }
             else{
-            
+
                 War3_SetBuff(client,iAdditionalMaxHealth,thisRaceID,hp);
             }
-            
+
             new old_XP = War3_GetXP(client,thisRaceID);
             new kill_XP = W3GetKillXP(client);
             if (xp > kill_XP)
                 xp = kill_XP;
-                
+
             if(W3GetPlayerProp(client,bStatefulSpawn)){
                 War3_SetXP(client,thisRaceID,old_XP+xp);
             }
-            
-            
+
+
             //PrintToChat(client,"new_credits %d",new_credits);
             if(W3GetPlayerProp(client,bStatefulSpawn))
             {
@@ -187,7 +192,7 @@ public OnWar3EventSpawn(client)
                 switch(totemCurrencySwitch)
                 {
                     // use system set currency
-                    case 0: 
+                    case 0:
                     {
                         dollar /= 16;
                         oldCash = War3_GetCurrency(client);
@@ -203,7 +208,7 @@ public OnWar3EventSpawn(client)
                         }
                     }
                     // use gold
-                    case 1: 
+                    case 1:
                     {
                         new Handle:g_hMaxCurrency = FindConVar("war3_max_currency");
                         new max;
@@ -215,7 +220,7 @@ public OnWar3EventSpawn(client)
                         {
                             max = 100;
                         }
-                            
+
 
                         oldCash=War3_GetGold(client);
                         dollar /= 16;
@@ -223,12 +228,12 @@ public OnWar3EventSpawn(client)
                         if (newCash > max)
                             newCash = max;
                         War3_SetGold(client,newCash);
-                        
+
                         War3_ChatMessage(client,"%T","[Totem Incantation] You gained {amount} HP, {amount} gold and {amount} XP",client,0x04,0x01,hp,newCash - oldCash,xp);
 
                     }
                     // use money
-                    case 2: 
+                    case 2:
                     {
                         oldCash=GetEntData(client, m_iAccount);
                         newCash = oldCash + dollar;
@@ -267,12 +272,12 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
         hurt_flag=true; //for skipping your own damage?
         return;
     }
-    
+
     new victim = GetClientOfUserId(GetEventInt(event,"userid"));
     new attacker = GetClientOfUserId(GetEventInt(event,"attacker"));
     if (victim && attacker && victim!=attacker) // &&hurt_flag==true)
     {
-    
+
         new race=War3_GetRace(attacker);
         if (race==thisRaceID)
         {
@@ -283,9 +288,9 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
                 case Game_TF: dmgamount = GetEventInt(event,"damageamount");
                 case Game_DOD: dmgamount = GetEventInt(event,"damage");
             }
-            
+
             new totaldamage = dmgamount;
-            
+
             // Head Hunter
             new skilllevelheadhunter = War3_GetSkillLevel(attacker,race,SKILL_HEADHUNTER);
             if (skilllevelheadhunter > 0 && dmgamount > 0 && !W3HasImmunity(victim,Immunity_Skills)&&!Hexed(attacker))
@@ -293,7 +298,7 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
                 decl String: weapon[MAX_NAME_LENGTH+1];
                 new bool:is_equipment=GetWeapon(event,attacker,weapon,sizeof(weapon));
                 new bool:is_melee=IsMelee(weapon, is_equipment, attacker, victim);
-                
+
                 new damage;
                 if (is_melee)
                 {
@@ -311,7 +316,7 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
                     }
                     damage= RoundFloat(float(dmgamount) * percent);
                     totaldamage += damage;
-                    
+
                     new Float:vec[3];
                     GetClientAbsOrigin(attacker,vec);
                     vec[2]+=50.0;
@@ -342,10 +347,10 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
                         //PrintToConsole(attacker,"%T","[Head Hunter] You inflicted +{amount} Damage",attacker,0x04,0x01,damage);
                     }
                 }
-                
+
                 if (damage>0)
                 {
-                    
+
                     hurt_flag = false;
                     War3_DealDamage(victim,damage,attacker,_,"headhunter",W3DMGORIGIN_SKILL,W3DMGTYPE_PHYSICAL);
                 }
@@ -367,7 +372,7 @@ public OnWar3EventDeath(victim,attacker){
         {
             skulls[attacker]++;
             War3_ChatMessage(attacker,"%T","You gained a SKULL [{amount}/{amount}]",attacker,skulls[attacker],(5*skilllevelheadhunter));
-        }                            
+        }
         decl Float:Origin[3], Float:Direction[3];
         GetClientAbsOrigin(victim, Origin);
         Direction[0] = GetRandomFloat(-100.0, 100.0);
@@ -383,12 +388,12 @@ DP("death");
 //W3GetVar(SmEvent)
     #define DF_FEIGNDEATH   32
     #define DMG_CRITS       1048576    //crits = DAMAGE_ACID
-    
+
     static const String:tf2_decap_weapons[][] = { "sword",   "club",      "axtinguisher",
     "fireaxe", "battleaxe", "tribalkukri"};
-    
+
     new victim = GetClientOfUserId(GetEventInt(event,"userid"));
-    
+
     if (victim > 0)
     {
         //if (War3_GetRace(victim) == thisRaceID){
@@ -425,7 +430,7 @@ DP("death");
                         headshot = false;
                     }
                 }
-                
+
                 // Head Hunter
                 new skilllevelheadhunter=War3_GetSkillLevel(client,thisRaceID,SKILL_HEADHUNTER);
                 if (skilllevelheadhunter &&!Hexed(client))
@@ -435,7 +440,7 @@ DP("death");
                     {
                         decl String:weapon[128];
                         GetEventString(event, "weapon", weapon, sizeof(weapon));
-                        
+
                         for (new i = 0; i < sizeof(tf2_decap_weapons); i++)
                         {
                             if (StrEqual(weapon,tf2_decap_weapons[i],false))
@@ -447,7 +452,7 @@ DP("death");
                     }
                     else
                     decap = false;
-                    
+
                     if(!decap&&!headshot){
                         decl String:weapon[128];
                         GetEventString(event, "weapon", weapon, sizeof(weapon));
@@ -455,17 +460,17 @@ DP("death");
                             decap=true;
                         }
                     }
-                    
+
                     ///FORCE ALWAYS GET SKULL
                     headshot=true;
-                    
+
                     if (headshot || decap )
                     {
                         if (skulls[client]<(5*skilllevelheadhunter))
                         {
                             skulls[client]++;
                             War3_ChatMessage(client,"%T","You gained a SKULL [{amount}/{amount}]",client,skulls[client],(5*skilllevelheadhunter));
-                        }                            
+                        }
                         decl Float:Origin[3], Float:Direction[3];
                         GetClientAbsOrigin(victim, Origin);
                         Direction[0] = GetRandomFloat(-100.0, 100.0);
@@ -490,9 +495,9 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
     new race=War3_GetRace(client);
     if (race==thisRaceID)
     {
-        
+
         new skill_SKILL_ASSAULT=War3_GetSkillLevel(client,race,SKILL_ASSAULT);
-        
+
         if (skill_SKILL_ASSAULT){
             //assaultskip[client]--;
             //if(assaultskip[client]<1||
@@ -504,7 +509,7 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
                 velocity[1]= GetEntDataFloat(client,m_vecVelocity_1);
                 velocity[0]*=float(skill_SKILL_ASSAULT)*0.25;
                 velocity[1]*=float(skill_SKILL_ASSAULT)*0.25;
-                
+
                 //new Float:len=GetVectorLength(velocity,false);
                 //if(len>100.0){
                 //    velocity[0]*=100.0/len;
@@ -514,14 +519,14 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
                 /*len=GetVectorLength(velocity,false);
                 PrintToChatAll("speed vector length %f",len);
                 */
-                
+
                 SetEntDataVector(client,m_vecBaseVelocity,velocity,true);
                 War3_CooldownMGR(client,assaultcooldown,thisRaceID,SKILL_ASSAULT,_,_);
-                
+
                 new String:wpnstr[32];
                 GetClientWeapon(client, wpnstr, 32);
                 for(new slot=0;slot<10;slot++){
-                    
+
                     new wpn=GetPlayerWeaponSlot(client, slot);
                     if(wpn>0){
                         //PrintToChatAll("wpn %d",wpn);
@@ -529,10 +534,10 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
                         GetEdictClassname(wpn, comparestr, 32);
                         //PrintToChatAll("%s %s",wpn, comparestr);
                         if(StrEqual(wpnstr,comparestr,false)){
-                            
+
                             TE_SetupKillPlayerAttachments(wpn);
                             TE_SendToAll();
-                            
+
                             new color[4]={0,25,255,200};
                             if(GetClientTeam(client)==TEAM_T||GetClientTeam(client)==TEAM_RED){
                                 color[0]=255;
@@ -571,36 +576,36 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
                 if(War3_SkillNotInCooldown(client,thisRaceID,SKILL_ASSAULT) &&  lastwasgroundtemp &&   !(GetEntityFlags(client) & FL_ONGROUND) &&!Hexed(client) )
                 {
                     //assaultskip[client]+=2;
-                    
-                    
+
+
                     if (TF2_HasTheFlag(client))
                         return Plugin_Continue;
-                    
-                
-                    
-                    
-                    
-                    decl Float:velocity[3]; 
+
+
+
+
+
+                    decl Float:velocity[3];
                     GetEntDataVector(client, m_vecVelocity_0, velocity); //gets all 3
-                    
+
                     /*if he is not in speed ult
                     if (!(GetEntityFlags(client) & FL_ONGROUND))
                     {
                         new Float:absvel = velocity[0];
                         if (absvel < 0.0)
                             absvel *= -1.0;
-                        
+
                         if (velocity[1] < 0.0)
                             absvel -= velocity[1];
                         else
                             absvel += velocity[1];
-                        
+
                         new Float:maxvel = m_IsULT_TRANSFORMformed[client] ? 1000.0 : 500.0;
                         if (absvel > maxvel)
                             return Plugin_Continue;
                     }*/
-                    
-                    
+
+
                     new Float:oldz=velocity[2];
                     velocity[2]=0.0; //zero z
                     new Float:len=GetVectorLength(velocity);
@@ -613,26 +618,26 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
                         TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, velocity);
                         //SetEntDataVector(client,m_vecBaseVelocity,velocity,true); //CS
                     }
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
                     //new Float:amt = 1.0 + (float(skill_SKILL_ASSAULT)*0.2);
                     //velocity[0]*=amt;
                     //velocity[1]*=amt;
                     //TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, velocity);
-                    
+
                     War3_CooldownMGR(client,assaultcooldown,thisRaceID,SKILL_ASSAULT,_,_);
                     //new color[4] = {255,127,0,255};
-                    
-                    
+
+
                     if (!War3_IsCloaked(client))
                     {
                         new String:wpnstr[32];
                         GetClientWeapon(client, wpnstr, 32);
                         for(new slot=0;slot<10;slot++){
-                            
+
                             new wpn=GetPlayerWeaponSlot(client, slot);
                             if(wpn>0){
                                 //PrintToChatAll("wpn %d",wpn);
@@ -640,10 +645,10 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
                                 GetEdictClassname(wpn, comparestr, 32);
                                 //PrintToChatAll("%s %s",wpn, comparestr);
                                 if(StrEqual(wpnstr,comparestr,false)){
-                                    
+
                                     TE_SetupKillPlayerAttachments(wpn);
                                     TE_SendToAll();
-                                    
+
                                     new color[4]={0,25,255,200};
                                     if(GetClientTeam(client)==TEAM_T||GetClientTeam(client)==TEAM_RED){
                                         color[0]=255;
@@ -667,9 +672,9 @@ public OnClientPutInServer(client)
 {
     skulls[client] = 0;
     m_IsULT_TRANSFORMformed[client]=false;
-    
+
     War3_SetBuff(client,fMaxSpeed,thisRaceID,1.0);
-    War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.0);    
+    War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.0);
 }
 
 
@@ -686,7 +691,7 @@ public OnUltimateCommand(client,race,bool:pressed)
         if (skill_trans>0)
         {
             if (War3_SkillNotInCooldown(client,thisRaceID,ULT_TRANSFORM,true)&&!Silenced(client)){
-            
+
                 if (skulls[client] < skill_trans)
                 {
                     new required = skill_trans - skulls[client];
@@ -694,20 +699,20 @@ public OnUltimateCommand(client,race,bool:pressed)
                 }
                 else
                 {
-                    skulls[client]-=skill_trans;
-                    
-                    m_IsULT_TRANSFORMformed[client]=true;
-                    
-                    
-                    War3_SetBuff(client,fMaxSpeed,thisRaceID,float(skill_trans)/5.00+1.00);
-                    War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.00-float(skill_trans)/5.00);
-                    
-                    new old_health=GetClientHealth(client);
-                    SetEntityHealth(client,old_health+skill_trans*10);
-                    
-                    PrintToChat(client,"%T","[Daemonic transformation] Your daemonic powers boost your strength",client,0x04,0x01);
-                    CreateTimer(10.0,Finishtrans,client);
-                    War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_TRANSFORM,_,_);
+					skulls[client]-=skill_trans;
+					
+					m_IsULT_TRANSFORMformed[client]=true;
+					
+					EmitSoundToAllAny(UltSound, client);
+					War3_SetBuff(client,fMaxSpeed,thisRaceID,float(skill_trans)/5.00+1.00);
+					War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.00-float(skill_trans)/5.00);
+					
+					new old_health=GetClientHealth(client);
+					SetEntityHealth(client,old_health+skill_trans*10);
+					
+					PrintToChat(client,"%T","[Daemonic transformation] Your daemonic powers boost your strength",client,0x04,0x01);
+					CreateTimer(10.0,Finishtrans,client);
+					War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_TRANSFORM,_,_);
                 }
             }
         }
@@ -724,10 +729,10 @@ public Action:Finishtrans(Handle:timer,any:client)
         return;
     }
 
-    
+
     if(m_IsULT_TRANSFORMformed[client]){
         War3_SetBuff(client,fMaxSpeed,thisRaceID,1.0);
-        War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.0);    
+        War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.0);
         if(ValidPlayer(client,true)){
             PrintToChat(client,"%T","[Daemonic transformation] You transformed back to normal",client,0x04,0x01);
         }
@@ -815,7 +820,7 @@ stock Gib(Float:Origin[3], Float:Direction[3], String:Model[])
     {
         new Ent = CreateEntityByName("prop_physics");
         DispatchKeyValue(Ent, "model", Model);
-        SetEntProp(Ent, Prop_Send, "m_CollisionGroup", 1); 
+        SetEntProp(Ent, Prop_Send, "m_CollisionGroup", 1);
         DispatchSpawn(Ent);
         TeleportEntity(Ent, Origin, Direction, Direction);
         CreateTimer(GetRandomFloat(15.0, 30.0), RemoveGib,EntIndexToEntRef(Ent));
@@ -846,15 +851,15 @@ public Action:SayCommand(client, const String:command[], argc)
     {
         decl String:text[128];
         GetCmdArg(1,text,sizeof(text));
-        
+
         decl String:arg[2][64];
         ExplodeString(text, " ", arg, 2, 64);
-        
+
         new String:firstChar[] = " ";
         firstChar{0} = arg[0]{0};
         if (StrContains("!/\\",firstChar) >= 0)
             strcopy(arg[0], sizeof(arg[]), arg[0]{1});
-        
+
         if (StrEqual(arg[0],"skulls",false))
         {
             new skilllevelheadhunter = (War3_GetRace(client)==thisRaceID) ? War3_GetSkillLevel(client,thisRaceID,SKILL_HEADHUNTER) : 0;
@@ -862,7 +867,7 @@ public Action:SayCommand(client, const String:command[], argc)
                 War3_ChatMessage(client,"%T","You have ({amount}/{amount}) SKULLs",client,skulls[client],(5*skilllevelheadhunter),0x04,0x01);
             else
             War3_ChatMessage(client,"%T","You have {amount} SKULLs",client,skulls[client],0x04,0x01);
-            
+
             return Plugin_Handled;
         }
     }
@@ -878,10 +883,10 @@ stock bool:GetWeapon(Handle:event, index,
 String:buffer[], buffersize)
 {
     new bool:is_equipment;
-    
+
     buffer[0] = 0;
     GetEventString(event, "weapon", buffer, buffersize);
-    
+
     if (buffer[0] == '\0' && index && IsPlayerAlive(index))
     {
         is_equipment = true;
@@ -889,7 +894,7 @@ String:buffer[], buffersize)
     }
     else
     is_equipment = false;
-    
+
     return is_equipment;
 }
 
@@ -977,7 +982,7 @@ stock IsEntLimitReached(warn=20,critical=16,client=0,const String:message[]="")
         {
             PrintToServer("Warning: Entity limit is nearly reached! Please switch or reload the map!");
             LogError("Entity limit is nearly reached: %d/%d (%d):%s", count, max, remaining, message);
-            
+
             if (client > 0)
             {
                 PrintToConsole(client,"%T","Entity limit is nearly reached: {amount}/{amount} ({amount}):{message}",client,
@@ -988,7 +993,7 @@ stock IsEntLimitReached(warn=20,critical=16,client=0,const String:message[]="")
         {
             PrintToServer("Caution: Entity count is getting high!");
             LogMessage("Entity count is getting high: %d/%d (%d):%s", count, max, remaining, message);
-            
+
             if (client > 0)
             {
                 PrintToConsole(client,"%T","Entity count is getting high: {amount}/{amount} ({amount}):{message}",client,

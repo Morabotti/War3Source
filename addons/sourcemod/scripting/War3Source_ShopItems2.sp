@@ -15,15 +15,25 @@
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 #include <sdktools>
-
 #include <cstrike>
 
 enum ITEMENUM{
-  POSTHASTE=0,
-  TRINKET,
-  LIFETUBE,
-  SNAKE_BRACELET,
-  FORTIFIED_BRACER,
+  WEAPON_M4A4=0,
+  WEAPON_M4A1_S,
+  WEAPON_AK47,
+  WEAPON_AUG,
+  WEAPON_SG556,
+  WEAPON_AWP,
+  WEAPON_GALIL,
+  WEAPON_FAMAS,
+  WEAPON_SCOUT,
+  WEAPON_MAG,
+  WEAPON_DEAGLE,
+  WEAPON_M249,
+  WEAPON_NEGEV,
+  WEAPON_P90,
+  WEAPON_G3SG1,
+  WEAPON_NADES,
   //CASH_REGEN,
   //DIE_LAUGHING,
   //SCROLL_OF_REVIVE,
@@ -95,75 +105,86 @@ public OnWar3LoadRaceOrItemOrdered(num)
     for(new x=0;x<MAXITEMS;x++)
       ItemID[x]=0;
 
-    ItemID[POSTHASTE]=War3_CreateShopItem2T("posthaste",10);
-    if(ItemID[POSTHASTE]==0){
+    ItemID[WEAPON_M4A4]=War3_CreateShopItem2T("weaponm4a4",15);
+    if(ItemID[WEAPON_M4A4]==0){
       DP("ERR ITEM ID RETURNED IS ZERO");
     }
-    ItemID[TRINKET]=War3_CreateShopItem2T("trinket",15);
-    ItemID[LIFETUBE]=War3_CreateShopItem2T("lifetube",40);
-    ItemID[SNAKE_BRACELET]=War3_CreateShopItem2T("sbracelt",10);
-    ItemID[FORTIFIED_BRACER]=War3_CreateShopItem2T("fbracer",10);
+    ItemID[WEAPON_M4A1_S]=War3_CreateShopItem2T("m4a1s",15);
+    ItemID[WEAPON_AK47]=War3_CreateShopItem2T("ak47",15);
+    ItemID[WEAPON_AUG]=War3_CreateShopItem2T("aug",15);
+    ItemID[WEAPON_SG556]=War3_CreateShopItem2T("sg556",15);
+    ItemID[WEAPON_AWP]=War3_CreateShopItem2T("awp",20);
+    ItemID[WEAPON_GALIL]=War3_CreateShopItem2T("galilar",10);
+    ItemID[WEAPON_FAMAS]=War3_CreateShopItem2T("famas",150);
+    ItemID[WEAPON_SCOUT]=War3_CreateShopItem2T("scout",8);
+    ItemID[WEAPON_MAG]=War3_CreateShopItem2T("mag7",8);
+    ItemID[WEAPON_DEAGLE]=War3_CreateShopItem2T("deagle",5);
+    ItemID[WEAPON_M249]=War3_CreateShopItem2T("m249",15);
+    ItemID[WEAPON_NEGEV]=War3_CreateShopItem2T("negev",15);
+    ItemID[WEAPON_P90]=War3_CreateShopItem2T("p90",10);
+    ItemID[WEAPON_G3SG1]=War3_CreateShopItem2T("g3sg1",15);
+    ItemID[WEAPON_NADES]=War3_CreateShopItem2T("nades",8);
   }
 }
 
 public OnItem2Purchase(client,item)
 {
-//DP("purchase %d %d",client,item);
-  if(item==ItemID[POSTHASTE] )
-  {
-    War3_SetBuffItem2(client,fMaxSpeed2,ItemID[POSTHASTE],1.034);
-  }
-  if(item==ItemID[TRINKET] ) 
-  {
-    War3_SetBuffItem2(client,fHPRegen,ItemID[TRINKET],0.5);
-  }
-  if(item==ItemID[LIFETUBE] ) 
-  {
-    War3_SetBuffItem2(client,fHPRegen,ItemID[LIFETUBE],1.0);
-  }
-  if(item==ItemID[FORTIFIED_BRACER]){
-  
-    War3_SetBuffItem2(client,iAdditionalMaxHealth,ItemID[FORTIFIED_BRACER],10);
-    War3_SetBuffItem(client,fHPRegenDeny,ItemID[FORTIFIED_BRACER],true);
-    War3_HealToMaxHP(client,10);
-  }
-}
-
-public OnItem2Lost(client,item){ //deactivate passives , client may have disconnected
-//DP("lost %d %d",client,item);
-  if(item==ItemID[POSTHASTE]){
-    War3_SetBuffItem2(client,fMaxSpeed2,ItemID[POSTHASTE],1.0);
-  }
-  if(item==ItemID[TRINKET] ) // boots of speed
-  {
-    War3_SetBuffItem2(client,fHPRegen,ItemID[TRINKET],0.0);
-  }
-  if(item==ItemID[LIFETUBE] ) // boots of speed
-  {
-    War3_SetBuffItem2(client,fHPRegen,ItemID[LIFETUBE],0.0);
-  }
-  if(item==ItemID[FORTIFIED_BRACER]){
-    War3_SetBuffItem2(client,iAdditionalMaxHealth,ItemID[FORTIFIED_BRACER],0);
-    War3_SetBuffItem(client,fHPRegenDeny,ItemID[FORTIFIED_BRACER],false);
-  }
-}
-public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
-{
-//sh has no shop2 items
-  if(IS_PLAYER(victim)&&IS_PLAYER(attacker)&&victim>0&&attacker>0&&attacker!=victim)
-  {
-    new vteam=GetClientTeam(victim);
-    new ateam=GetClientTeam(attacker);
-    if(vteam!=ateam)
-    {
-      if(!Perplexed(victim,false)&&War3_GetOwnsItem2(victim,ItemID[SNAKE_BRACELET]))
-      {
-        if(W3Chance(0.05))
-        {
-          War3_DamageModPercent(0.0); //NO DAMAMGE
-          W3MsgEvaded(victim,attacker);
-        }
-      }
-    }
-  }
+	//DP("purchase %d %d",client,item);
+	if(item==ItemID[WEAPON_M4A4] )
+	{
+		GivePlayerItem(client, "weapon_m4a1");
+	}
+	if(item==ItemID[WEAPON_M4A1_S] ) 
+	{
+		GivePlayerItem(client, "weapon_m4a1_silencer");
+	}
+	if(item==ItemID[WEAPON_AK47] ) 
+	{
+		GivePlayerItem(client, "weapon_ak47");
+	}
+	if(item==ItemID[WEAPON_AUG]){
+		GivePlayerItem(client, "weapon_aug");
+	}
+	if(item==ItemID[WEAPON_SG556] )
+	{
+		GivePlayerItem(client, "weapon_sg556");
+	}
+	if(item==ItemID[WEAPON_AWP] ) 
+	{
+		GivePlayerItem(client, "weapon_awp");
+	}
+	if(item==ItemID[WEAPON_GALIL] ) 
+	{
+		GivePlayerItem(client, "weapon_galilar");
+	}
+	if(item==ItemID[WEAPON_FAMAS]){
+		GivePlayerItem(client, "weapon_famas");
+	}
+	if(item==ItemID[WEAPON_SCOUT]){
+		GivePlayerItem(client, "weapon_ssg08");
+	}
+	if(item==ItemID[WEAPON_MAG]){
+		GivePlayerItem(client, "weapon_mag7");
+	}
+	if(item==ItemID[WEAPON_DEAGLE]){
+		GivePlayerItem(client, "weapon_deagle");
+	}
+	if(item==ItemID[WEAPON_M249]){
+		GivePlayerItem(client, "weapon_m249");
+	}
+	if(item==ItemID[WEAPON_NEGEV]){
+		GivePlayerItem(client, "weapon_negev");
+	}
+	if(item==ItemID[WEAPON_P90]){
+		GivePlayerItem(client, "weapon_p90");
+	}
+	if(item==ItemID[WEAPON_G3SG1]){
+		GivePlayerItem(client, "weapon_g3sg1");
+	}
+	if(item==ItemID[WEAPON_NADES]){
+		GivePlayerItem(client, "weapon_hegrenade");
+		GivePlayerItem(client, "weapon_flashbang");
+		GivePlayerItem(client, "weapon_flashbang");
+		GivePlayerItem(client, "weapon_smokegrenade");
+	}
 }

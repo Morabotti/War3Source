@@ -1,10 +1,9 @@
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 
 #include <sourcemod>
-#include "W3SIncs/War3Source_Interface"  
-//#include "W3SIncs/War3Source_Effects"
+#include "W3SIncs/War3Source_Interface"
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Rarity",
     author = "War3Source Team",
@@ -36,23 +35,26 @@ new SKILL_SMITTEN,SKILL_HEARTACHE,SKILL_SLEEP,ULTIMATE;
 
 new Float:smittenCooldown=15.0;
 new Float:smittenDuration=10.0;
-new Float:smittenMultiplier[]={1.0,0.9,0.83,0.76,0.7};
+new Float:smittenMultiplier[]={1.0, 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.68, 0.65};
 new bSmittened[MAXPLAYERSCUSTOM];
 new Float:SmittendMultiplier[MAXPLAYERSCUSTOM];
 
 
 new Float:sleepCooldown=15.0;
-new Float:sleepDuration[]={0.0,3.0,3.5,4.0,4.5};
+new Float:sleepDuration[]={0.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
 new Float:sleepDistance=400.0;
 
 new Handle:SleepHandle[MAXPLAYERSCUSTOM]; //the trie
 new Handle:SleepTimer[MAXPLAYERSCUSTOM]; //the timer that ends the sleep
 
-new Float:heartacheChance[]={0.0,0.06,0.9,0.12,0.15};
+new Float:heartacheChance[]={0.0, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18};
+new String:SleepSnd[] = "*mora-wcs/war3source/snoring.mp3";
+new String:SleepSnd_FullPath[] = "sound/mora-wcs/war3source/snoring.mp3";
+new BeamSprite;
 
-
-new Float:ultDuration[]={0.0,1.5,1.75,2.0,2.25};
+new Float:ultDuration[]={0.0, 1.25, 1.5, 1.75, 2.00, 2.25, 2.50, 2.75, 3.00};
 new Float:ultDistance=500.0;
+new HearthSprite;
 
 new holdingvictim[MAXPLAYERSCUSTOM]; //the victim being held
 new Handle:holdingTimer[MAXPLAYERSCUSTOM];
@@ -62,10 +64,10 @@ public OnWar3LoadRaceOrItemOrdered(num)
     if(num==220)
     {
         thisRaceID=War3_CreateNewRaceT("rarity");
-        SKILL_SMITTEN=War3_AddRaceSkillT(thisRaceID,"Smitten",false,4);
-        SKILL_HEARTACHE=War3_AddRaceSkillT(thisRaceID,"Heartache",false,4);
-        SKILL_SLEEP=War3_AddRaceSkillT(thisRaceID,"Mesmerize",false,4);
-        ULTIMATE=War3_AddRaceSkillT(thisRaceID,"Hold",true,4); 
+        SKILL_SMITTEN=War3_AddRaceSkillT(thisRaceID,"Smitten",false,8);
+        SKILL_HEARTACHE=War3_AddRaceSkillT(thisRaceID,"Heartache",false,8);
+        SKILL_SLEEP=War3_AddRaceSkillT(thisRaceID,"Mesmerize",false,8);
+        ULTIMATE=War3_AddRaceSkillT(thisRaceID,"Hold",true,8);
         War3_CreateRaceEnd(thisRaceID); ///DO NOT FORGET THE END!!!
     }
 }
@@ -77,15 +79,30 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-
+	AddFileToDownloadsTable(SleepSnd_FullPath);
+	AddFileToDownloadsTable("materials/mora-wcs/morawcs/tribal_heart_shadow.vmt");
+	AddFileToDownloadsTable("materials/mora-wcs/morawcs/tribal_heart_shadow.vtf");
+	HearthSprite = PrecacheModel("materials/mora-wcs/morawcs/tribal_heart_shadow.vmt");
+	BeamSprite = PrecacheModel( "materials/mora-wcs/sprites/laser.vmt" );
+	PrecacheSoundAny(SleepSnd);
 }
-public OnWar3EventSpawn(client){
-    if(RaceDisabled)
-    {
-        return;
-    }
-
-    bSmittened[client]=false;
+public OnWar3EventSpawn(client)
+{
+	if(RaceDisabled)
+	{
+		return;
+	}
+	bSmittened[client]=false;
+	new race = War3_GetRace( client );
+	if( race == thisRaceID )
+	{
+		W3FlashScreen(client,{255, 26, 26,30});
+		decl Float:spawn_pos[3];
+		GetClientAbsOrigin(client, spawn_pos);
+		spawn_pos[2]+=85.0;
+		TE_SetupGlowSprite(spawn_pos, HearthSprite, 3.0, 0.2, 255);
+		TE_SendToAll();
+	}
 }
 
 
@@ -104,23 +121,23 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
             if(bSmittened[attacker]){
                 War3_DamageModPercent(SmittendMultiplier[attacker]);
             }
-            
+
         }
         if(SleepHandle[victim]){
             KillTimer(SleepTimer[victim]);
             SleepTimer[victim]=INVALID_HANDLE;
             SleepHandle[attacker]=SleepHandle[victim];
             SleepHandle[victim]=INVALID_HANDLE;
-            
+
             UnSleep(victim);
             new Float:duration;
             GetTrieValue(SleepHandle[attacker],"originalduration",duration);
             SleepTimer[attacker]=CreateTimer(duration,EndSleep,attacker);
             Sleep(attacker);
-            
+
         }
     }
-    
+
     ///need to do sleep transfer, beware of sleep trie which you  need to close
 }
 
@@ -151,25 +168,31 @@ public OnWar3EventPostHurt(victim, attacker, Float:damage, const String:weapon[3
         if(lvl > 0  )
         {
             if(W3Chance(heartacheChance[lvl]*W3ChanceModifier(attacker))    && !IsSkillImmune(victim)  ){
-            
-                War3_HealToBuffHP(attacker, RoundToFloor(damage));
-                PrintToConsole(attacker,"Heartache +%d HP", RoundToFloor(damage));
+				
+				War3_HealToBuffHP(attacker, RoundToFloor(damage));
+				W3FlashScreen(attacker,{255, 26, 26,30});
+				PrintToConsole(attacker,"Heartache +%d HP", RoundToFloor(damage));
             }
         }
-        
+
         lvl = War3_GetSkillLevel(attacker,thisRaceID,SKILL_SMITTEN);
         if(lvl > 0)
         {
             if(!IsSkillImmune(victim)){
                 if(!Hexed(attacker)&&War3_SkillNotInCooldown(attacker,thisRaceID,SKILL_SMITTEN,false)&&GetClientTeam(attacker)!=GetClientTeam(victim))
                 {
-                    bSmittened[victim]=true;
-                    SmittendMultiplier[victim]=smittenMultiplier[lvl];
-                    
-                    CreateTimer(smittenDuration,UnSmitten,victim);
-                    War3_CooldownMGR(attacker,smittenCooldown,thisRaceID,SKILL_SMITTEN);
-                    W3Hint(victim,_,_,"%T","You have been Smittened you do less damage",victim);
-                    W3Hint(attacker,_,_,"%T","Activated Smitten",attacker);
+					bSmittened[victim]=true;
+					SmittendMultiplier[victim]=smittenMultiplier[lvl];
+					
+					CreateTimer(smittenDuration,UnSmitten,victim);
+					War3_CooldownMGR(attacker,smittenCooldown,thisRaceID,SKILL_SMITTEN);
+					decl Float:pos[3];
+					GetClientAbsOrigin(victim, pos);
+					pos[2]+=80.0;
+					TE_SetupGlowSprite(pos, HearthSprite, 1.5, 0.15, 225);
+					TE_SendToAll();
+					W3Hint(victim,_,_,"%T","You have been Smittened you do less damage",victim);
+					W3Hint(attacker,_,_,"%T","Activated Smitten",attacker);
                 }
             }
         }
@@ -203,13 +226,13 @@ public OnAbilityCommand(client,ability,bool:pressed)
         if(lvl > 0)
         {
             if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,SKILL_SLEEP,true))
-            {    
-            
-                
+            {
+
+
                 //War3_GetTargetInViewCone(client,Float:max_distance=0.0,bool:include_friendlys=false,Float:cone_angle=23.0,Function:FilterFunction=INVALID_FUNCTION);
                 new target = War3_GetTargetInViewCone(client,sleepDistance,_,_,AbilityFilter);
                 if(target>0)
-                {    
+                {
                     new Float:duration=sleepDuration[lvl];
                     SleepHandle[target]=CreateTrie();
                     SleepTimer[target]=CreateTimer(duration,EndSleep,target);
@@ -218,70 +241,63 @@ public OnAbilityCommand(client,ability,bool:pressed)
                     SetTrieValue(SleepHandle[target],"originalduration",duration);
                     //SetTrieValue(sleepTrie,"remainingduration",duration);
                     Sleep(target);
-                    
-                    
+
                     War3_CooldownMGR(client,sleepCooldown,thisRaceID,SKILL_SLEEP);
-                
+
                 }
                 else{
                     W3MsgNoTargetFound(client,sleepDistance);
                 }
-            
+
             }
         }
     }
 }
 Sleep(client){
-    if(RaceDisabled)
-    {
-        return;
-    }
-
-    War3_SetBuff(client,bStunned,thisRaceID,true);
-    PrintHintText(client,"%T","You are Mesmerized",client);
-    if(GameTF()){
-        
-    }
+	if(RaceDisabled)
+	{
+		return;
+	}
+	new lvl = War3_GetSkillLevel(client,thisRaceID,SKILL_SLEEP);
+	new Float:duration=sleepDuration[lvl];
+	W3FlashScreen(client,{0,0,0,160},duration,duration*1.5,FFADE_IN);
+	W3SetPlayerColor(client,thisRaceID,64, 64, 64,50,GLOW_SKILL);
+	EmitSoundToAllAny(SleepSnd,client);
+	War3_SetBuff(client,bStunned,thisRaceID,true);
+	PrintHintText(client,"%T","You are Mesmerized",client);
+	if(GameTF()){
+	
+	}
 }
 
 public Action:EndSleep(Handle:t,any:client){
-    if(RaceDisabled)
-    {
-        return;
-    }
-
-    SleepTimer[client]=INVALID_HANDLE;
-    CloseHandle(SleepHandle[client]);
-    SleepHandle[client]=INVALID_HANDLE;
-    
-    UnSleep(client);
+	if(RaceDisabled)
+	{
+		return;
+	}
+	W3ResetPlayerColor(client,thisRaceID);
+	StopSoundAny(client,SNDCHAN_AUTO,SleepSnd);
+	SleepTimer[client]=INVALID_HANDLE;
+	CloseHandle(SleepHandle[client]);
+	SleepHandle[client]=INVALID_HANDLE;
+	
+	UnSleep(client);
 }
 UnSleep(client){
-    if(RaceDisabled)
-    {
-        return;
-    }
-
-    War3_SetBuff(client,bStunned,thisRaceID,false);
-    PrintHintText(client,"%T","No Longer Mesmerized",client);
+	if(RaceDisabled)
+	{
+		return;
+	}
+	W3ResetPlayerColor(client,thisRaceID);
+	StopSoundAny(client,SNDCHAN_AUTO,SleepSnd);
+	War3_SetBuff(client,bStunned,thisRaceID,false);
+	PrintHintText(client,"%T","No Longer Mesmerized",client);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 public OnUltimateCommand(client,race,bool:pressed)
 {
-    
+
     if(race==thisRaceID && pressed && ValidPlayer(client,true) )
     {
         new level=War3_GetSkillLevel(client,race,ULTIMATE);
@@ -292,26 +308,34 @@ public OnUltimateCommand(client,race,bool:pressed)
                 //War3_GetTargetInViewCone(client,Float:max_distance=0.0,bool:include_friendlys=false,Float:cone_angle=23.0,Function:FilterFunction=INVALID_FUNCTION);
                 new target = War3_GetTargetInViewCone(client,ultDistance,_,_,UltimateFilter);
                 if(target>0)
-                {        
-                    //in case of double hold, release the old one
-                    if(holdingTimer[client]!=INVALID_HANDLE){
-                        TriggerTimer(holdingTimer[client]);
-                    }
-                    new Float:duration = ultDuration[level];
-                    ///hold it right there
-                    holdingvictim[client]=target;
-                    holdingTimer[client]=CreateTimer(duration,EndHold,client);
-                    War3_SetBuff(client,bStunned,thisRaceID,true);
-                    War3_SetBuff(target,bStunned,thisRaceID,true);
-                    
-                    War3_CooldownMGR(client,20.0,thisRaceID,ULTIMATE);
+                {
+					//in case of double hold, release the old one
+					if(holdingTimer[client]!=INVALID_HANDLE){
+					TriggerTimer(holdingTimer[client]);
+					}
+					new Float:duration = ultDuration[level];
+					///hold it right there
+					holdingvictim[client]=target;
+					holdingTimer[client]=CreateTimer(duration,EndHold,client);
+					War3_SetBuff(client,bStunned,thisRaceID,true);
+					War3_SetBuff(target,bStunned,thisRaceID,true);
+					decl Float:start[3];
+					decl Float:end[3];
+					GetClientAbsOrigin(client,start);
+					GetClientAbsOrigin(target,end);
+					start[2] += 5;
+					end[2] += 5;
+					
+					TE_SetupBeamPoints(start, end, BeamSprite, BeamSprite, 0, 0, duration, 10.0, 10.0, 1, 1.0, { 255, 255, 255, 255 }, 0);
+					TE_SendToAll();
+					War3_CooldownMGR(client,20.0,thisRaceID,ULTIMATE);
                 }
                 else{
                     W3MsgNoTargetFound(client,ultDistance);
                 }
             }
-        }    
-    }            
+        }
+    }
 }
 
 //return true to allow targeting
@@ -343,6 +367,6 @@ CleanUP(client){
         SleepTimer[client]=INVALID_HANDLE;
         CloseHandle(SleepHandle[client]);
         SleepHandle[client]=INVALID_HANDLE;
-        
+
     }
 }

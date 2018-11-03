@@ -25,7 +25,7 @@ public OnMapStart()
         War3_PrecacheParticle("achieved");
     }
     else if (GameCS() || GameCSGO()) {
-        PrecacheModel("effects/combinemuzzle2.vmt");
+        PrecacheModel("mora-wcs/effects/combinemuzzle2.vmt");
     }
 }
 
@@ -91,7 +91,7 @@ public Action:CSParticle(const client, const level)
         DispatchKeyValueFloat(particle, "Twist", 0.0);
         
         DispatchKeyValue(particle, "Name", Name);
-        DispatchKeyValue(particle, "SmokeMaterial", "effects/combinemuzzle2.vmt");
+        DispatchKeyValue(particle, "SmokeMaterial", "mora-wcs/effects/combinemuzzle2.vmt");
         DispatchKeyValue(particle, "RenderColor", "252 232 131");
         DispatchKeyValue(particle, "SpreadSpeed", "10");
         DispatchKeyValue(particle, "RenderAmt", "200");

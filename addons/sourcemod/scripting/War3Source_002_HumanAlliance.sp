@@ -1,9 +1,14 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <sdktools_tempents>
+#include <sdktools_functions>
+#include <sdktools_tempents_stocks>
+#include <sdktools_entinput>
+#include <sdktools_sound>
 #include "W3SIncs/War3Source_Interface"
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Race - Human Alliance",
     author = "War3Source Team",
@@ -31,17 +36,17 @@ public OnWar3RaceDisabled(oldrace)
 new Handle:ultCooldownCvar;
 
 // Chance/Info Arrays
-new Float:BashChance[5]={0.0,0.07,0.13,0.19,0.25};
+new Float:BashChance[9]={0.0, 0.04, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28, 0.32};
 new Float:TeleportDistance[5]={0.0,600.0,700.0,850.0,1000.0};
 //TEST ONLY
 //new Float:TeleportDistance[5]={0.0,240.0,240.0,240.0,240.0};
 
-new Float:InvisibilityAlphaTF[5]={1.0,0.84,0.68,0.56,0.40};
+new Float:InvisibilityAlphaTF[9]={1.0,0.84,0.68,0.56,0.40,0.40,0.40,0.40,0.40};
 
-new Float:InvisibilityAlphaCS[5]={1.0,0.90,0.8,0.7,0.6};
+new Float:InvisibilityAlphaCS[9]={1.0, 0.95, 0.85, 0.75, 0.65, 0.60, 0.55, 0.50, 0.50};
 
 
-new DevotionHealth[5]={0,15,25,35,45};
+new DevotionHealth[9]={0,5,10,15,20,25,30,35,45};
 
 
 // Effects
@@ -57,13 +62,13 @@ new Float:oldpos[MAXPLAYERSCUSTOM][3];
 new Float:teleportpos[MAXPLAYERSCUSTOM][3];
 new bool:inteleportcheck[MAXPLAYERSCUSTOM];
 
-//new String:teleportSound[]="war3source/blinkarrival.wav";
-new String:teleportSound[256];
+new String:teleportSound[]= "*mora-wcs/war3source/blinkarrival.mp3";
+new String:teleportSound_FullPath[]= "sound/mora-wcs/war3source/blinkarrival.mp3";
 
 public OnPluginStart()
 {
-    ultCooldownCvar = CreateConVar("war3_human_teleport_cooldown","20.0","Cooldown between teleports");
-    
+    ultCooldownCvar = CreateConVar("war3_human_teleport_cooldown","14.0","Cooldown between teleports");
+
     LoadTranslations("w3s.race.human.phrases.txt");
 }
 
@@ -77,14 +82,11 @@ public OnWar3LoadRaceOrItemOrdered(num)
     }
     if(num == 20)
     {
-    
-        
-        
-        
+
         thisRaceID=War3_CreateNewRaceT("human");
-        SKILL_INVIS=War3_AddRaceSkillT(thisRaceID,"Invisibility",false,4,"60% (CS), 40% (TF)");
-        SKILL_HEALTH=War3_AddRaceSkillT(thisRaceID,"DevotionAura",false,4,"15/25/35/45");
-        SKILL_BASH=War3_AddRaceSkillT(thisRaceID,"Bash",false,4,"7/13/19/25%","0.2");
+        SKILL_INVIS=War3_AddRaceSkillT(thisRaceID,"Invisibility",false,8,"60% (CS), 40% (TF)");
+        SKILL_HEALTH=War3_AddRaceSkillT(thisRaceID,"DevotionAura",false,8,"15/25/35/45");
+        SKILL_BASH=War3_AddRaceSkillT(thisRaceID,"Bash",false,8,"7/13/19/25%","0.2");
         //if(GAMETF)
         //{
         //    ULT_TELEPORT=War3_AddRaceSkillT(thisRaceID,"Teleport",true,4,"600/800/1000/1200");
@@ -96,11 +98,11 @@ public OnWar3LoadRaceOrItemOrdered(num)
         SetArrayCell(genericSkillOptions,1,ultCooldownCvar);
         ULT_TELEPORT=War3_UseGenericSkill(thisRaceID,"g_teleport",genericSkillOptions,"Teleport","",true,true);
         //}
-        
-        W3SkillCooldownOnSpawn(thisRaceID,ULT_TELEPORT,10.0,_);
-        
+
+        W3SkillCooldownOnSpawn(thisRaceID,ULT_TELEPORT,8.0,_);
+
         War3_CreateRaceEnd(thisRaceID);
-        
+
         War3_AddSkillBuff(thisRaceID, SKILL_BASH, fBashChance, BashChance);
         War3_AddSkillBuff(thisRaceID, SKILL_INVIS, fInvisibilitySkill, GameTF() ? InvisibilityAlphaTF : InvisibilityAlphaCS);
         War3_AddSkillBuff(thisRaceID, SKILL_HEALTH, iAdditionalMaxHealth, DevotionHealth);
@@ -109,12 +111,12 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnMapStart()
 {
-    War3_AddSoundFolder(teleportSound, sizeof(teleportSound), "blinkarrival.mp3");
+    AddFileToDownloadsTable(teleportSound_FullPath);
 
     BeamSprite=War3_PrecacheBeamSprite();
     HaloSprite=War3_PrecacheHaloSprite();
-    
-    War3_AddCustomSound(teleportSound);
+
+    PrecacheSoundAny(teleportSound);
 }
 
 
@@ -124,9 +126,27 @@ public OnWar3EventSpawn(client)
     {
         return;
     }
-
+    new race = War3_GetRace( client );
+    if( race == thisRaceID )
+	{
+		decl Float:spawn_pos[3];
+		GetClientAbsOrigin(client, spawn_pos);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SendToAll(0.0);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SendToAll(0.0);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SendToAll(0.0);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SetupSmoke(spawn_pos, HaloSprite, 800.0, 1);
+		TE_SendToAll(0.0);
+	}
     ActivateSkills(client); //DO NOT OPTIMIZE, ActivateSkills checks for skill level
 }
+
 public ActivateSkills(client)
 {
     if(RaceDisabled)
@@ -153,7 +173,7 @@ public ActivateSkills(client)
         }
         TE_SetupBeamRingPoint(vec,40.0,10.0,BeamSprite,HaloSprite,0,15,1.0,15.0,0.0,ringColor,10,0);
         TE_SendToAll();
-        
+
     }
 }
 
@@ -170,13 +190,18 @@ new TPFailCDResetToSkill[MAXPLAYERSCUSTOM];
 
 public OnUltimateCommand(client,race,bool:pressed)
 {
+    if(RaceDisabled)
+    {
+        return;
+    }
+
     //DP("ult pressed");
     if( pressed  && ValidPlayer(client,true) && !Silenced(client))
     {
         new Handle:genericSkillOptions;
         new Float:distances[5];
         new customerrace,customerskill;
-    
+
         new level=W3_GenericSkillLevel(client,GENERIC_SKILL_TELEPORT,genericSkillOptions,customerrace,customerskill);
         //DP("level CUSrace CUSskill %d %d %d",level,customerrace,customerskill);
         if(level)
@@ -195,7 +220,7 @@ public OnUltimateCommand(client,race,bool:pressed)
                     War3_CooldownMGR(client,cooldown,customerrace,customerskill,_,_);
                 }
             }
-        
+
         }
         else if(War3_GetRace(client)==customerrace)
         {
@@ -239,7 +264,7 @@ bool:Teleport(client,Float:distance)
 
     if(!inteleportcheck[client])
     {
-        
+
         new Float:angle[3];
         GetClientEyeAngles(client,angle);
         new Float:endpos[3];
@@ -247,23 +272,23 @@ bool:Teleport(client,Float:distance)
         GetClientEyePosition(client,startpos);
         new Float:dir[3];
         GetAngleVectors(angle, dir, NULL_VECTOR, NULL_VECTOR);
-        
+
         ScaleVector(dir, distance);
-        
+
         AddVectors(startpos, dir, endpos);
-        
+
         GetClientAbsOrigin(client,oldpos[client]);
-        
-        
+
+
         ClientTracer=client;
         TR_TraceRayFilter(startpos,endpos,MASK_ALL,RayType_EndPoint,AimTargetFilter);
         TR_GetEndPosition(endpos);
-        
+
         if(enemyImmunityInRange(client,endpos)){
             W3MsgEnemyHasImmunity(client);
             return false;
         }
-        
+
         new Float:distanceteleport=GetVectorDistance(startpos,endpos);
         if(distanceteleport<200.0){
             new String:buffer[100];
@@ -273,41 +298,56 @@ bool:Teleport(client,Float:distance)
         }
         GetAngleVectors(angle, dir, NULL_VECTOR, NULL_VECTOR);///get dir again
         ScaleVector(dir, distanceteleport-33.0);
-        
+
         AddVectors(startpos,dir,endpos);
         emptypos[0]=0.0;
         emptypos[1]=0.0;
         emptypos[2]=0.0;
-        
+
         endpos[2]-=30.0;
         getEmptyLocationHull(client,endpos);
-        
+
         if(GetVectorLength(emptypos)<1.0){
             new String:buffer[100];
             Format(buffer, sizeof(buffer), "%T", "NoEmptyLocation", client);
             PrintHintText(client,buffer);
             return false; //it returned 0 0 0
         }
-        
-        
+
+        decl Float:teleport_pos[3];
+        GetClientAbsOrigin(client, teleport_pos);
+        teleport_pos[2] = teleport_pos[2] + 30;
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SendToAll(0.0);
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SendToAll(0.0);
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SendToAll(0.0);
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SetupSmoke(teleport_pos, HaloSprite, 800.0, 1);
+        TE_SendToAll(0.0);
+
         TeleportEntity(client,emptypos,NULL_VECTOR,NULL_VECTOR);
         EmitSoundToAllAny(teleportSound,client);
         EmitSoundToAllAny(teleportSound,client);
-        
-        
-        
+
+
+
         teleportpos[client][0]=emptypos[0];
         teleportpos[client][1]=emptypos[1];
         teleportpos[client][2]=emptypos[2];
-        
+
         inteleportcheck[client]=true;
         CreateTimer(0.14,checkTeleport,client);
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         return true;
     }
 
@@ -321,22 +361,22 @@ public Action:checkTeleport(Handle:h,any:client){
 
     inteleportcheck[client]=false;
     new Float:pos[3];
-    
+
     GetClientAbsOrigin(client,pos);
-    
+
     if(GetVectorDistance(teleportpos[client],pos)<0.001)//he didnt move in this 0.1 second
     {
         TeleportEntity(client,oldpos[client],NULL_VECTOR,NULL_VECTOR);
         PrintHintText(client,"%T","CantTeleportHere",client);
         War3_CooldownReset(client,TPFailCDResetToRace[client],TPFailCDResetToSkill[client]);
-        
-        
+
+
     }
     else{
-        
-        
+
+
         PrintHintText(client,"%T","Teleported",client);
-        
+
     }
     return Plugin_Continue;
 }
@@ -354,14 +394,14 @@ public bool:getEmptyLocationHull(client,Float:originalpos[3]){
         return false;
     }
 
-    
+
     new Float:mins[3];
     new Float:maxs[3];
     GetClientMins(client,mins);
     GetClientMaxs(client,maxs);
-    
+
     new absincarraysize=sizeof(absincarray);
-    
+
     new limit=5000;
     for(new x=0;x<absincarraysize;x++){
         if(limit>0){
@@ -373,7 +413,7 @@ public bool:getEmptyLocationHull(client,Float:originalpos[3]){
                         pos[0]+=float(absincarray[x]);
                         pos[1]+=float(absincarray[y]);
                         pos[2]+=float(absincarray[z]);
-                        
+
                         TR_TraceHullFilter(pos,pos,mins,maxs,MASK_SOLID,CanHitThis,client);
                         //new ent;
                         if(!TR_DidHit(_))
@@ -382,27 +422,27 @@ public bool:getEmptyLocationHull(client,Float:originalpos[3]){
                             limit=-1;
                             break;
                         }
-                        
+
                         if(limit--<0){
                             break;
                         }
                     }
-                    
+
                     if(limit--<0){
                         break;
                     }
                 }
             }
-            
+
             if(limit--<0){
                 break;
             }
-            
+
         }
-        
+
     }
     return true;
-} 
+}
 
 public bool:CanHitThis(entityhit, mask, any:data)
 {
@@ -432,7 +472,7 @@ public bool:enemyImmunityInRange(client,Float:playerVec[3])
     //ELIMINATE ULTIMATE IF THERE IS IMMUNITY AROUND
     new Float:otherVec[3];
     new team = GetClientTeam(client);
-    
+
     for(new i=1;i<=MaxClients;i++)
     {
         if(ValidPlayer(i,true)&&GetClientTeam(i)!=team&&W3HasImmunity(i,Immunity_Ultimates))
@@ -445,6 +485,4 @@ public bool:enemyImmunityInRange(client,Float:playerVec[3])
         }
     }
     return false;
-}             
-
-    
+}

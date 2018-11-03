@@ -8,11 +8,17 @@ public Plugin:myinfo =
     description="Generic vampirism skill"
 };
 
+new BeamSprite;
 new Handle:h_ForwardOnWar3VampirismPost = INVALID_HANDLE;
 
 public OnPluginStart()
 {
     LoadTranslations("w3s.race.undead.phrases.txt");
+}
+
+public OnMapStart()
+{
+	BeamSprite = PrecacheModel( "materials/mora-wcs/sprites/lgtning.vmt" );
 }
 
 public bool:InitNativesForwards()
@@ -38,14 +44,24 @@ LeechHP(victim, attacker, damage, Float:percentage, bool:bBuff)
     
     if (iOldHP  != iNewHP)
     {
-        new iHealthLeeched = iNewHP - iOldHP;
-        War3_VampirismEffect(victim, attacker, iHealthLeeched);
-        
-        Call_StartForward(h_ForwardOnWar3VampirismPost);
-        Call_PushCell(victim);
-        Call_PushCell(attacker);
-        Call_PushCell(iHealthLeeched);
-        Call_Finish();
+		new iHealthLeeched = iNewHP - iOldHP;
+		War3_VampirismEffect(victim, attacker, iHealthLeeched);
+		
+		decl Float:attack_pos[3];
+		decl Float:victim_pos[3];
+		GetClientAbsOrigin(attacker,attack_pos);
+		GetClientAbsOrigin(victim,victim_pos);
+		attack_pos[2] += 10;
+		victim_pos[2] += 10;
+		
+		TE_SetupBeamPoints(attack_pos, victim_pos, BeamSprite, 0, 0, 0, 0.5, 30.0, 30.0, 0, 0.0, { 255, 0, 0, 255 }, 0);
+		TE_SendToAll(0.0);
+		
+		Call_StartForward(h_ForwardOnWar3VampirismPost);
+		Call_PushCell(victim);
+		Call_PushCell(attacker);
+		Call_PushCell(iHealthLeeched);
+		Call_Finish();
     }
 }
 

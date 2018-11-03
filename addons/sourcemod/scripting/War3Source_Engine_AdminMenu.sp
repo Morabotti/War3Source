@@ -1,7 +1,7 @@
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
     name = "War3Source - Engine - Admin Menu",
     author = "War3Source Team",
@@ -10,10 +10,10 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-    RegConsoleCmd("war3admin",War3Source_Admin,"Brings up the War3Source admin panel.");
+    RegConsoleCmd("wcsadmin",War3Source_Admin,"Brings up the WCS admin panel.");
 
-    RegConsoleCmd("say war3admin",War3Source_Admin,"Brings up the War3Source admin panel.");
-    RegConsoleCmd("say_team war3admin",War3Source_Admin,"Brings up the War3Source admin panel.");
+    RegConsoleCmd("say wcsadmin",War3Source_Admin,"Brings up the WCS admin panel.");
+    RegConsoleCmd("say_team wcsadmin",War3Source_Admin,"Brings up the WCS admin panel.");
 }
 
 
@@ -24,14 +24,14 @@ public Action:War3Source_Admin(client,args)
         new Handle:adminMenu=CreateMenu(War3Source_Admin_Selected);
         SetMenuExitButton(adminMenu,true);
         SetSafeMenuTitle(adminMenu,"%T","[War3Source] Select a player to administrate",client);
-        
+
         decl String:playername[64];
         decl String:war3playerbuf[4];
 
         for(new x=1;x<=MaxClients;x++)
         {
             if(ValidPlayer(x)){
-                
+
                 Format(war3playerbuf,sizeof(war3playerbuf),"%d",x);
                 GetClientName(x,playername,sizeof(playername));
                 AddMenuItem(adminMenu,war3playerbuf,playername);
@@ -39,7 +39,7 @@ public Action:War3Source_Admin(client,args)
         }
         DisplayMenu(adminMenu,client,20);
     }
-    
+
     return Plugin_Handled;
 }
 
@@ -69,13 +69,13 @@ public War3Source_Admin_Player(client,target)
     SetMenuExitButton(adminMenu_Player,true);
     decl String:playername[64];
     GetClientName(target,playername,sizeof(playername));
-    
+
     SetSafeMenuTitle(adminMenu_Player,"%T","[War3Source] Administration options for {player}",client,playername);
-    
+
     decl String:buf[4];
     Format(buf,sizeof(buf),"%d",target);
     new race=War3_GetRace(target);
-    
+
     new String:details[64];
     new String:shopitem[64];
     new String:setrace[64];
@@ -84,7 +84,7 @@ public War3Source_Admin_Player(client,target)
     new String:managlevel[64];
     new String:managgold[64];
     new String:managlvlbank[64];
-    
+
     Format(details,sizeof(details),"%T","View detailed information",client);
     Format(shopitem,sizeof(shopitem),"%T","Give shop item",client);
     Format(setrace,sizeof(setrace),"%T","Set race",client);
@@ -93,7 +93,7 @@ public War3Source_Admin_Player(client,target)
     Format(managlevel,sizeof(managlevel),"%T","Increase/Decrease Level",client);
     Format(managgold,sizeof(managgold),"%T","Increase/Decrease Gold",client);
     Format(managlvlbank,sizeof(managlvlbank),"%T","Levelbank Managing",client);
-        
+
     AddMenuItem(adminMenu_Player,buf,details);
     AddMenuItem(adminMenu_Player,buf,shopitem);
     AddMenuItem(adminMenu_Player,buf,setrace);
@@ -106,7 +106,7 @@ public War3Source_Admin_Player(client,target)
     }
     AddMenuItem(adminMenu_Player,buf,managlvlbank);
     DisplayMenu(adminMenu_Player,client,20);
-    
+
 }
 
 public War3Source_Admin_Player_Select(Handle:menu,MenuAction:action,client,selection)
@@ -119,7 +119,7 @@ public War3Source_Admin_Player_Select(Handle:menu,MenuAction:action,client,selec
         new SelectionStyle;
         GetMenuItem(menu,selection,SelectionInfo,sizeof(SelectionInfo),SelectionStyle, SelectionDispText,sizeof(SelectionDispText));
         new target=StringToInt(SelectionInfo);
-        
+
 
         new String:adminname[64];
         GetClientName(client,adminname,sizeof(adminname));
@@ -151,7 +151,7 @@ public War3Source_Admin_Player_Select(Handle:menu,MenuAction:action,client,selec
                     new race=War3_GetRace(target);
                     W3ClearSkillLevels(target,race);
                     W3DoLevelCheck(target);
-                    
+
                     War3_ChatMessage(target,"%T","Admin {admin} reset your skills",target,adminname);
                     War3_ChatMessage(client,"%T","You reset player {player} skills",client,targetname);
                 }
@@ -186,22 +186,22 @@ public War3Source_Admin_Player_Select(Handle:menu,MenuAction:action,client,selec
     {
         CloseHandle(menu);
     }
-    
+
 }
 
 public War3Source_Admin_PlayerInfo(client,target)
 {
-    
+
     if(ValidPlayer(target,false))
     {
         SetTrans(client);
         new Handle:playerInfo=CreateMenu(War3Source_Admin_PI_Select);
         SetMenuExitButton(playerInfo,true);
-        
+
         decl String:playername[64];
         GetClientName(target,playername,sizeof(playername));
         new race=War3_GetRace(target);
-        
+
         decl String:race_name[64];
         War3_GetRaceName(race,race_name,sizeof(race_name));
         new gold=War3_GetGold(target);
@@ -211,17 +211,17 @@ public War3Source_Admin_PlayerInfo(client,target)
         SetSafeMenuTitle(playerInfo,"%T","[War3Source] Info for {player}. Race: {racename} Gold: {amount} XP: {amount} Level: {amount} Levelbank: {amount}",client,playername,race_name,gold,xp,level,lvlbank);
         decl String:buf[4];
         Format(buf,sizeof(buf),"%d",target);
-        
+
         new String:backmenu[64];
-        
+
         Format(backmenu,sizeof(backmenu),"%T","Back to options",client);
-        
+
         AddMenuItem(playerInfo,buf,backmenu);
         DisplayMenu(playerInfo,client,20);
     }
     else
         War3_ChatMessage(client,"%T","The player has disconnected from the server",client);
-        
+
 }
 
 public War3Source_Admin_PI_Select(Handle:menu,MenuAction:action,client,selection)
@@ -242,7 +242,7 @@ public War3Source_Admin_PI_Select(Handle:menu,MenuAction:action,client,selection
     {
         CloseHandle(menu);
     }
-    
+
 }
 
 public War3Source_Admin_XP(client,target)
@@ -251,28 +251,28 @@ public War3Source_Admin_XP(client,target)
     {
         new Handle:menu=CreateMenu(War3Source_Admin_XP_Select);
         SetMenuExitButton(menu,true);
-        
+
         decl String:playername[64];
         GetClientName(target,playername,sizeof(playername));
-        
+
         SetSafeMenuTitle(menu,"%T","[War3Source] Select an option for {player}",client,playername);
         decl String:buf[4];
         Format(buf,sizeof(buf),"%d",target);
-        
+
         new String:give100xp[64];
         new String:give1000xp[64];
         new String:give10000xp[64];
         new String:remove100xp[64];
         new String:remove1000xp[64];
         new String:remove10000xp[64];
-        
+
         Format(give100xp,sizeof(give100xp),"%T","Give 100 XP",client);
         Format(give1000xp,sizeof(give1000xp),"%T","Give 1000 XP",client);
         Format(give10000xp,sizeof(give10000xp),"%T","Give 10000 XP",client);
         Format(remove100xp,sizeof(remove100xp),"%T","Remove 100 XP",client);
         Format(remove1000xp,sizeof(remove1000xp),"%T","Remove 1000 XP",client);
         Format(remove10000xp,sizeof(remove10000xp),"%T","Remove 10000 XP",client);
-        
+
         AddMenuItem(menu,buf,give100xp);
         AddMenuItem(menu,buf,give1000xp);
         AddMenuItem(menu,buf,give10000xp);
@@ -350,7 +350,7 @@ public War3Source_Admin_XP_Select(Handle:menu,MenuAction:action,client,selection
     {
         CloseHandle(menu);
     }
-    
+
 }
 
 public War3Source_Admin_GiveShopItem(client,target)
@@ -381,7 +381,7 @@ public War3Source_Admin_GiveShopItem(client,target)
 
 public War3Source_Admin_GSI_Select(Handle:menu,MenuAction:action,client,selection)
 {
-    
+
     if(action==MenuAction_Select)
     {
         decl String:SelectionInfo[4];
@@ -392,20 +392,20 @@ public War3Source_Admin_GSI_Select(Handle:menu,MenuAction:action,client,selectio
         if(ValidPlayer(target))
         {
             new item=selection+1; //hax
-            if(!War3_GetOwnsItem(target,item)) 
+            if(!War3_GetOwnsItem(target,item))
             {
                 W3SetVar(TheItemBoughtOrLost,item);
                 W3CreateEvent(DoForwardClientBoughtItem,target);
-                
+
                 decl String:itemname[64];
                 W3GetItemName(item,itemname,sizeof(itemname));
-                
+
                 decl String:adminname[64];
                 GetClientName(client,adminname,sizeof(adminname));
-                
+
                 decl String:targetname[64];
                 GetClientName(target,targetname,sizeof(targetname));
-                
+
                 War3_ChatMessage(client,"%T","You gave {player} a {itemname}",client,targetname,itemname);
                 War3_ChatMessage(target,"%T","You recieved a {itemname} from admin {player}",target,itemname,adminname);
                 War3Source_Admin_Player(client,target);
@@ -420,7 +420,7 @@ public War3Source_Admin_GSI_Select(Handle:menu,MenuAction:action,client,selectio
     {
         CloseHandle(menu);
     }
-    
+
 }
 
 new AdminMenuSetRaceTarget[MAXPLAYERSCUSTOM];
@@ -436,13 +436,13 @@ public War3Source_Admin_SetRace(client,target)
 
         GetClientName(target,playername,sizeof(playername));
         SetSafeMenuTitle(menu,"%T","[War3Source] Select a race for {player}",client,playername);
-        
+
         decl String:racefullname[64];
         decl String:raceshortname[32];
-        
-        
+
+
         new racelist[MAXRACES];
-        new racecountreturned=W3GetRaceList(racelist); 
+        new racecountreturned=W3GetRaceList(racelist);
         AddMenuItem(menu,"norace","No Race");
         for(new i=0;i<racecountreturned;i++) //notice this starts at zero!
         {
@@ -473,12 +473,12 @@ public War3Source_Admin_SetRace_Select(Handle:menu,MenuAction:action,client,sele
         new race=War3_GetRaceIDByShortname(SelectionInfo);
         if(ValidPlayer(target))
         {
-        
+
             W3SetPlayerProp(target,RaceChosenTime,GetGameTime());
             W3SetPlayerProp(target,RaceSetByAdmin,true);
-            
+
             War3_SetRace(target,race);
-            
+
             decl String:racename[64];
             War3_GetRaceName(race,racename,sizeof(racename));
             decl String:adminname[64];
@@ -495,7 +495,7 @@ public War3Source_Admin_SetRace_Select(Handle:menu,MenuAction:action,client,sele
     {
         CloseHandle(menu);
     }
-    
+
 }
 
 public War3Source_Admin_Level(client,target)
@@ -509,13 +509,13 @@ public War3Source_Admin_Level(client,target)
         SetSafeMenuTitle(menu,"%T","&[War3Source] Select an option for {player}",client,playername);
         decl String:buf[4];
         Format(buf,sizeof(buf),"%d",target);
-        
+
         new String:givelevel[64];
         new String:removelevel[64];
-        
+
         Format(givelevel,sizeof(givelevel),"%T","Give a level",client);
         Format(removelevel,sizeof(removelevel),"%T","Remove a level",client);
-        
+
         AddMenuItem(menu,buf,givelevel);
         AddMenuItem(menu,buf,removelevel);
         DisplayMenu(menu,client,20);
@@ -527,7 +527,7 @@ public War3Source_Admin_Level(client,target)
 
 public War3Source_Admin_Level_Select(Handle:menu,MenuAction:action,client,selection)
 {
-    
+
     if(action==MenuAction_Select)
     {
         decl String:SelectionInfo[4];
@@ -566,10 +566,10 @@ public War3Source_Admin_Level_Select(Handle:menu,MenuAction:action,client,select
                 {
                     War3_SetLevel(target,race,newlevel);
                     W3ClearSkillLevels(target,race);
-                    
+
                     War3_ChatMessage(client,"%T","You removed a level from player {player}",client,targetname);
                     War3_ChatMessage(target,"%T","&Admin {player} removed a level from you, re-pick your skills",target,adminname);
-                    
+
                     W3DoLevelCheck(target);
                 }
             }
@@ -582,12 +582,12 @@ public War3Source_Admin_Level_Select(Handle:menu,MenuAction:action,client,select
     {
         CloseHandle(menu);
     }
-    
+
 }
 
 public War3Source_Admin_Gold(client,target)
 {
-    
+
     if(ValidPlayer(target,false))
     {
         new Handle:menu=CreateMenu(War3Source_Admin_Gold_Select);
@@ -597,21 +597,21 @@ public War3Source_Admin_Gold(client,target)
         SetSafeMenuTitle(menu,"%T","&&[War3Source] Select an option for {player}",client,playername);
         decl String:buf[4];
         Format(buf,sizeof(buf),"%d",target);
-        
+
         new String:give1gold[64];
         new String:give5gold[64];
         new String:give10gold[64];
         new String:remove1gold[64];
         new String:remove5gold[64];
         new String:remove10gold[64];
-        
+
         Format(give1gold,sizeof(give1gold),"%T","Give 1 gold",client);
         Format(give5gold,sizeof(give5gold),"%T","Give 5 gold",client);
         Format(give10gold,sizeof(give10gold),"%T","Give 10 gold",client);
         Format(remove1gold,sizeof(remove1gold),"%T","Remove 1 gold",client);
         Format(remove5gold,sizeof(remove5gold),"%T","Remove 5 gold",client);
         Format(remove10gold,sizeof(remove10gold),"%T","Remove 10 gold",client);
-        
+
         AddMenuItem(menu,buf,give1gold);
         AddMenuItem(menu,buf,give5gold);
         AddMenuItem(menu,buf,give10gold);
@@ -693,7 +693,7 @@ public War3Source_Admin_Gold_Select(Handle:menu,MenuAction:action,client,selecti
 
 public War3Source_Admin_Lvlbank(client,target)
 {
-    
+
     if(ValidPlayer(target,false))
     {
         new Handle:menu=CreateMenu(War3Source_Admin_Lvlbank_Select);
@@ -703,21 +703,21 @@ public War3Source_Admin_Lvlbank(client,target)
         SetSafeMenuTitle(menu,"%T","&&&[War3Source] Select an option for {player}",client,playername);
         decl String:buf[4];
         Format(buf,sizeof(buf),"%d",target);
-        
+
         new String:give1lvlb[64];
         new String:give5lvlb[64];
         new String:give10lvlb[64];
         new String:remove1lvlb[64];
         new String:remove5lvlb[64];
         new String:remove10lvlb[64];
-        
+
         Format(give1lvlb,sizeof(give1lvlb),"%T","Give 1 level in levelbank",client);
         Format(give5lvlb,sizeof(give5lvlb),"%T","Give 5 levels in levelbank",client);
         Format(give10lvlb,sizeof(give10lvlb),"%T","Give 10 levels in levelbank",client);
         Format(remove1lvlb,sizeof(remove1lvlb),"%T","Remove 1 level from levelbank",client);
         Format(remove5lvlb,sizeof(remove5lvlb),"%T","Remove 5 levels from levelbank",client);
         Format(remove10lvlb,sizeof(remove10lvlb),"%T","Remove 10 levels from levelbank",client);
-        
+
         AddMenuItem(menu,buf,give1lvlb);
         AddMenuItem(menu,buf,give5lvlb);
         AddMenuItem(menu,buf,give10lvlb);
