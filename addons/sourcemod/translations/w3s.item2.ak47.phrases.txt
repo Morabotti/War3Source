@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"ak47_temName"
+	{
+		"en"		"Weapon AK47"
+	}
+	"ak47_temDesc"
+	{
+		"en"		"Gives AK47"
+	}
+}

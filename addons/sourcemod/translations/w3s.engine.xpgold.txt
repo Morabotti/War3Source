@@ -7,47 +7,47 @@ Phrases
     "{racename} - Level {amount} - {amount} XP / {amount} XP"
     {
         "#format"   "{1:s},{2:d},{3:d},{4:d}"
-        "en"        "{1} - Level {2} - {3} / {4} XP."
+        "en"        "{green}{1}{default} - Level {green}{2}{default} - XP: {green}{3}{default} / {green}{4}{default}"
     }
     "{racename} - Level {amount} - {amount} XP"
     {
         "#format"   "{1:s},{2:d},{3:d}"
-        "en"        "{1} - Level {2} - {3} XP."
+        "en"        "{green}{1}{default} - Level {green}{2}{default} - {green}{3}{default} XP."
     }
     "No XP is given when less than {amount} players are playing"
     {
         "#format"   "{1:d}"
-        "en"        "No XP is given when less than {1} players are playing"
+        "en"        "No XP is given when less than {green}{1}{default} players are playing"
     }
     "You have gained {amount} XP and {amount} {currencyName} for {award}"
     {
         "#format"   "{1:d},{2:d},{3:s},{4:s}"
-        "en"        "You have gained {1} XP and {2} {3} for {4}."
+        "en"        "You have gained {green}{1} XP{default} and {green}{2}{default} {green}{3}{default} for {green}{4}{default}."
     }
     "You have gained {amount} XP for {award}"
     {
         "#format"   "{1:d},{2:s}"
-        "en"        "You have gained {1} XP for {2}."
+        "en"        "You have gained {green}{1} XP{default} for {green}{2}{default}."
     }
     "You have gained {amount} {currencyName} for {award}"
     {
         "#format"   "{1:d},{2:s},{3:s}"
-        "en"        "You have gained {1} {2} for {3}."
+        "en"        "You have gained {green}{1}{default} {green}{2}{default} for {green}{3}{default}."
     }
     "You have lost {amount} XP and {amount} {currencyName} for {award}"
     {
         "#format"   "{1:d},{2:d},{3:s},{4:s}"
-        "en"        "You have lost {1} XP and {2} {3} for {4}."
+        "en"        "You have lost {green}{1} XP{default} and {green}{2}{default} {green}{3}{default} for {green}{4}{default}."
     }
     "You have lost {amount} XP for {award}"
     {
         "#format"   "{1:d},{2:s}"
-        "en"        "You have lost {1} XP for {2}."
+        "en"        "You have lost {green}{1} XP{default} for {green}{2}{default}."
     }
     "You have lost {amount} {currencyName} for {award}"
     {
         "#format"   "{1:d},{2:s},{3:s}"
-        "en"        "You have lost {1} {2} for {3}."
+        "en"        "You have lost {green}{1}{default} {green}{2}{default} for {green}{3}{default}."
     }
     "being on the winning team"
     {
@@ -180,6 +180,6 @@ Phrases
     "You are now level {amount}"
     {
         "#format"   "{1:d}"
-        "en"        "You are now level {1}."
+        "en"        "You are now level {green}{1}{default}."
     }
 }

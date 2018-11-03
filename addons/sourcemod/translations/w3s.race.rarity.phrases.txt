@@ -3,7 +3,7 @@
 	//<shortname>_RaceName
 	"rarity_RaceName"
 	{
-		"en"		"[MLP:FIM] Rarity"
+		"en"		"Rarity"
 	}
 
 	//skills:

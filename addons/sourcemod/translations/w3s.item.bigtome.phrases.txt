@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"bigtome_ItemName"
+	{
+		"en"		"Bigger Tome of Experience"
+	}
+	"bigtome_ItemDesc"
+	{
+		"en"		"Automatically gain experience, this item is used on purchase."
+	}
+}

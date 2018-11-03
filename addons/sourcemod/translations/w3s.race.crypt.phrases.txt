@@ -57,12 +57,12 @@
 	"Returned {amount} damage to {player}"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[W3S] Returned {1} damage to {2}"
+		"en"		"Returned {1} damage to {2}"
 	}
 	"Received {amount} damage from Spiked Carapace from {player}"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[W3S] Received {1} damage from Spiked Carapace from {2}"
+		"en"		"Received {1} damage from Spiked Carapace from {2}"
 	}
 	"Blocked Impale"
 	{

@@ -1,5 +1,5 @@
-"Phrases"
-{
+*"Phrases"
+*{
 	"Welcome"
 	{
 		"#format"	"{1:s},{2:s}"
@@ -24,4 +24,4 @@
 	{
 		"en"		"Bonus for Player who are wearing this clantag don't set"
 	}
-}
+*}

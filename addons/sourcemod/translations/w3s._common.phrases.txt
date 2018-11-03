@@ -2,170 +2,170 @@
 {
 	"[War3Source]"
 	{
-		"en"		"{green} [War3Source] {default} "
+		"en"		"[-WCS-] "
 	}
 
 	//War3Source_Engine_AdminConsole.sp
 	"[War3Source] The syntax of the command is: war3_setxp <player> <xp>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_setxp <player> <xp>"
+		"en"		"[-WCS-] The syntax of the command is: war3_setxp <player> <xp>"
 	}
 	"[War3Source] You just set {player} XP to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set \"{1}'s\" XP to {2}."
+		"en"		"[-WCS-] You just set {green}\"{1}'s\" XP{default} to {green}{2}{default}."
 	}
 	"Admin {player} set your XP to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" set your XP to {2}."
+		"en"		"Admin {green}\"{1}\"{default} set your {green}XP{default} to {green}{2}{default}."
 	}
 	"[War3Source] The syntax of the command is: war3_givexp <player> <xp>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givexp <player> <xp>"
+		"en"		"[-WCS-] The syntax of the command is: war3_givexp <player> <xp>"
 	}
 	"[War3Source] You just gave {amount} XP to {player}"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You just gave {1} XP to \"{2}\"."
+		"en"		"[-WCS-] You just gave {green}{1} XP{default} to {green}\"{2}\"{default}."
 	}
 	"Admin {player} gave you {amount} XP"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" gave you {2} XP."
+		"en"		"Admin {green}\"{1}\"{default} gave you {green}{2} XP{default}."
 	}
 	"[War3Source] The syntax of the command is: war3_removexp <player> <xp>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_removexp <player> <xp>"
+		"en"		"[-WCS-] The syntax of the command is: war3_removexp <player> <xp>"
 	}
 	"[War3Source] You just removed {amount} XP from {player}"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You just removed {1} XP from \"{2}\"."
+		"en"		"[-WCS-] You just removed {green}{1} XP{default} from {green}\"{2}\"{default}."
 	}
 	"Admin {player} removed {amount} XP from you"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" removed {2} XP from you."
+		"en"		"Admin {green}\"{1}\"{default} removed {green}{2} XP{default} from you."
 	}
 	"[War3Source] The syntax of the command is: war3_setlevel <player> <level>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_setlevel <player> <level>"
+		"en"		"[-WCS-] The syntax of the command is: war3_setlevel <player> <level>"
 	}
 	"[War3Source] You just set player {player} level to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set player \"{1}'s\" level to {2}."
+		"en"		"[-WCS-] You just set player {green}\"{1}s\"{default} level to {green}{2}{default}."
 	}
 	"Admin {player} set your level to {amount}, re-pick your skills"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" set your level to {2}, re-pick your skills."
+		"en"		"Admin {green}\"{1}\"{default} set your level to {green}{2}{default}, re-pick your skills."
 	}
 	"[War3Source] The syntax of the command is: war3_givelevel <player>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givelevel <player>"
+		"en"		"[-WCS-] The syntax of the command is: war3_givelevel <player>"
 	}
 	"[War3Source] Player {player} is already at their max level"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Player \"{1}\" is already at their max level."
+		"en"		"[-WCS-] Player {green}\"{1}\"{default} is already at their max level."
 	}
 	"[War3Source] You just gave player {player} a level"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] You just gave player \"{1}\" a level."
+		"en"		"[-WCS-] You just gave player {green}\"{1}\"{default} a level."
 	}
 	"Admin {player} gave you a level"
 	{
 		"#format"	"{1:s}"
-		"en"		"Admin \"{1}\" gave you a level."
+		"en"		"Admin {green}\"{1}\"{default} gave you a level."
 	}
 	"[War3Source] The syntax of the command is: war3_removelevel <player>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_removelevel <player>"
+		"en"		"[-WCS-] The syntax of the command is: war3_removelevel <player>"
 	}
 	"[War3Source] Player {player} is already at level 0"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Player \"{1}\" is already at level 0."
+		"en"		"[-WCS-] Player {green}\"{1}\"{default} is already at level {green}0{default}."
 	}
 	"[War3Source] You just removed a level from player {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] You just removed a level from player \"{1}\"."
+		"en"		"[-WCS-] You just removed a level from player {green}\"{1}\"{default}."
 	}
 	"Admin {player} removed a level from you, re-pick your skills"
 	{
 		"#format"	"{1:s}"
-		"en"		"Admin \"{1}\" removed a level from you, re-pick your skills."
+		"en"		"Admin {green}\"{1}\"{default} removed a level from you, re-pick your skills."
 	}
 	"[War3Source] The syntax of the command is: war3_War3_SetGold <player> <gold>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_War3_SetGold <player> <gold>"
+		"en"		"[-WCS-] The syntax of the command is: war3_War3_SetGold <player> <gold>"
 	}
 	"[War3Source] You just set player {player} gold to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set player \"{1}'s\" gold to {2}."
+		"en"		"[-WCS-] You just set player {green}\"{1}'s\"{default} gold to {green}{2}{default}."
 	}
 	"Admin {player} set your gold to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" set your gold to {2}."
+		"en"		"Admin {green}\"{1}\"{default} set your gold to {green}{2}{default}."
 	}
 	"[War3Source] You just set player {player} diamonds to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set player \"{1}'s\" diamonds to {2}."
+		"en"		"[-WCS-] You just set player {green}\"{1}'s\"{default} diamonds to {green}{2}{default}."
 	}
 	"Admin {player} set your diamonds to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" set your diamonds to {2}."
+		"en"		"Admin {green}\"{1}\"{default} set your diamonds to {green}{2}{default}."
 	}
 	"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
+		"en"		"[-WCS-] The syntax of the command is: war3_givegold <player> <gold>"
 	}
 	"[War3Source] You just gave player {player} {amount} gold"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just gave player \"{1}\" {2} gold."
+		"en"		"[-WCS-] You just gave player {green}\"{1}\"{default} {green}{2}{default} gold."
 	}
 	"Admin {player} give you {amount} gold"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" give you {2} gold."
+		"en"		"Admin {green}\"{1}\"{default} give you {green}{2}{default} gold."
 	}
 	"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
+		"en"		"[-WCS-] The syntax of the command is: war3_givegold <player> <gold>"
 	}
 	"[War3Source] You just removed {amount} gold from player {player}"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You just removed {1} gold from player \"{2}\"."
+		"en"		"[-WCS-] You just removed {green}{1}{default} gold from player {green}\"{2}\"{default}."
 	}
 	"Admin {player} removed {amount} gold from you"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Admin \"{1}\" removed {2} gold from you."
+		"en"		"Admin {green}\"{1}\"{default} removed {green}{2}{default} gold from you."
 	}
 	"[War3Source] No players matched your query"
 	{
-		"en"		"[War3Source] No players matched your query."
+		"en"		"[-WCS-] No players matched your query."
 	}
 
 	//War3Source_Engine_AdminMenu.sp
 	"[War3Source] Select a player to administrate"
 	{
-		"en"		"[War3Source] Select a player to administrate."
+		"en"		"[WCSadmin] Select a player to administrate."
 	}
 	"[War3Source] Administration options for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Administration options for {1}."
+		"en"		"[WCSadmin] Administration options for {1}."
 	}
 	"View detailed information"
 	{
@@ -216,7 +216,7 @@
 	"[War3Source] Info for {player}. Race: {racename} Gold: {amount} XP: {amount} Level: {amount} Levelbank: {amount}"
 	{
 		"#format"	"{1:s},{2:s},{3:d},{4:d},{5:d},{6:d}"
-		"en"		"[War3Source] Info for {1}.\nRace: {2}\nGold: {3}\nXP: {4}\nLevel: {5}\nLevelbank: {6}"
+		"en"		"[WCSadmin] Info for {1}.\nRace: {2}\nGold: {3}\nXP: {4}\nLevel: {5}\nLevelbank: {6}"
 	}
 	"Back to options"
 	{
@@ -229,7 +229,7 @@
 	"[War3Source] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[WCSadmin] Select an option for {1}."
 	}
 	"Give 100 XP"
 	{
@@ -278,7 +278,7 @@
 	"[War3Source] Select an item to give to {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an item to give to {1}."
+		"en"		"[WCSadmin] Select an item to give to {1}."
 	}
 	"You gave {player} a {itemname}"
 	{
@@ -297,7 +297,7 @@
 	"[War3Source] Select a race for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select a race for {1}."
+		"en"		"[WCSadmin] Select a race for {1}."
 	}
 	"You set player {player} to race {racename}"
 	{
@@ -312,7 +312,7 @@
 	"&[War3Source] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[WCSadmin] Select an option for {1}."
 	}
 	"Give a level"
 	{
@@ -355,7 +355,7 @@
 	"&&[War3Source] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[WCSadmin] Select an option for {1}."
 	}
 	"Give 1 gold"
 	{
@@ -404,7 +404,7 @@
 	"&&&[War3Source] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[WCSadmin] Select an option for {1}."
 	}
 	"Give 1 level in levelbank"
 	{
@@ -479,6 +479,10 @@
 	{
 		"en"		"say tomes5 to buy many tomes at once, up to 10"
 	}
+	"say bigtomes5 to buy many tomes at once, up to 10"
+	{
+		"en"		"say bigtomes5 to buy many tomes at once, up to 10"
+	}
 	"War3Source Developers"
 	{
 		"en"		"Anthony (PimpinJuice) STEAM_0:1:6121386 and Ownz (DarkEnergy) STEAM_0:1:9724315 are developers for War3Source."
@@ -489,7 +493,7 @@
 	}
 	"The proper commands are +ability, +ability1 ... and +ultimate"
 	{
-		"en"		"The proper commands are {lightgreen}+ability{default}, {lightgreen}+ability1 {default}... and {lightgreen}+ultimate"
+		"en"		"The proper commands are {green}+ability{default}, {green}+ability1 {default}... and {green}+ultimate"
 	}
 
 	//War3Source_Engine_CooldownMgr.sp
@@ -539,27 +543,27 @@
 	"[War3Source] XP retrieval query: sending MAIN and load all races request! Time: {amount}"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"[War3Source] XP retrieval query: sending MAIN and load all races request! Time: {1}"
+		"en"		"[-WCS-] XP retrieval query: sending MAIN and load all races request! Time: {1}"
 	}
 	"[War3Source] War3 MAIN retrieval: gold {amount} Time {amount}"
 	{
 		"#format"	"{1:d},{2:.2f}"
-		"en"		"[War3Source] War3 MAIN retrieval: gold {1}. Time {2}"
+		"en"		"[-WCS-] War3 MAIN retrieval: gold {1}. Time {2}"
 	}
 	"[War3Source] XP Ret: Race {race} Level {amount} XP {amount} Time {amount}..."
 	{
 		"#format"	"{1:s},{2:d},{3:d},{4:.2f}"
-		"en"		"[War3Source] XP Ret: Race {1} Level {2} XP {3} Time {4}..."
+		"en"		"[-WCS-] XP Ret: Race {1} Level {2} XP {3} Time {4}..."
 	}
 	"[War3Source] Successfully retrieved data races, total of {amount} races were returned, {amount} are running on this server"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[War3Source] Successfully retrieved data races, total of {1} races were returned, {2} are running on this server."
+		"en"		"[-WCS-] Successfully retrieved data races, total of {1} races were returned, {2} are running on this server."
 	}
 	"[War3Source] Inserting fresh level xp data for {amount} races"
 	{
 		"#format"	"{1:d}"
-		"en"		"[War3Source] Inserting fresh level xp data for {1} races."
+		"en"		"[-WCS-] Inserting fresh level xp data for {1} races."
 	}
 	"Successfully retrieved save data"
 	{
@@ -568,12 +572,12 @@
 	"[War3Source] XP RETRIEVED IN {amount} seconds"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"[War3Source] XP RETRIEVED IN {1} seconds"
+		"en"		"[-WCS-] XP RETRIEVED IN {1} seconds"
 	}
 	"[War3Source] Saving XP for race {racename}: LVL {amount} XP {amount}"
 	{
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"[War3Source] Saving XP for race {1}: LVL {2} XP {3}"
+		"en"		"[-WCS-] Saving XP for race {1}: LVL {2} XP {3}"
 	}
 
 	//War3Source_Engine_DatabaseTop100.sp
@@ -584,7 +588,7 @@
 	}
 	"[War3Source] Select a player to view stats"
 	{
-		"en"		"[War3Source] Select a player to view stats."
+		"en"		"[-WCS-] Select a player to view stats."
 	}
 	"The player you selected has left the server"
 	{
@@ -593,7 +597,7 @@
 	"[War3Source] Info for {player}. Current Race: {racename} money: {amount}"
 	{
 		"#format"	"{1:s},{2:s},{3:d}"
-		"en"		"[War3Source] Info for {1}.\nCurrent Race: {2}\nmoney: {3}"
+		"en"		"[-WCS-] Info for {1}.\nCurrent Race: {2}\nmoney: {3}"
 	}
 	"The player has disconnected from the server"
 	{
@@ -602,7 +606,7 @@
 	"[War3Source] {racename} info for {player}. Level: {amount} XP: {amount}"
 	{
 		"#format"	"{1:s},{2:s},{3:d},{4:d}"
-		"en"		"[War3Source] {1} info for {2}.\nLevel: {3}\nXP: {4}"
+		"en"		"[-WCS-] {1} info for {2}.\nLevel: {3}\nXP: {4}"
 	}
 	"{skillname} - Level {amount}"
 	{
@@ -616,7 +620,7 @@
 	"[War3Source] Top {amount} ({amount}-{amount})"
 	{
 		"#format"	"{1:d},{2:d},{3:d}"
-		"en"		"[War3Source] Top {1} ({2}-{3})"
+		"en"		"[-WCS-] Top {1} ({2}-{3})"
 	}
 	"{rank} - {player} (Lvl. {amount}, {amount} XP)"
 	{
@@ -643,12 +647,12 @@
 	//War3Source_Engine_HelpMenu.sp
 	"[War3Source] Select a command for more info"
 	{
-		"en"		"[War3Source] Select a command for more info."
+		"en"		"[-WCS-] Select a command for more info."
 	}
 	"[War3Source] War3Source Command - {cmd}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] War3Source Command - {1}"
+		"en"		"[-WCS-] War3Source Command - {1}"
 	}
 	"Description:"
 	{
@@ -660,11 +664,11 @@
 	}
 	"HelpMenu0"
 	{
-		"en"		"say war3menu"
+		"en"		"say wcs"
 	}
 	"HelpMenu0desc"
 	{
-		"en"		"The main War3Source menu"
+		"en"		"The main wcsmenu"
 	}
 	"HelpMenu1"
 	{
@@ -740,7 +744,7 @@
 	}
 	"HelpMenu10"
 	{
-		"en"		"say war3stats"
+		"en"		"say wcsstats"
 	}
 	"HelpMenu10desc"
 	{
@@ -748,7 +752,7 @@
 	}
 	"HelpMenu11"
 	{
-		"en"		"say war3top10"
+		"en"		"say wcstop10"
 	}
 	"HelpMenu11desc"
 	{
@@ -756,7 +760,7 @@
 	}
 	"HelpMenu12"
 	{
-		"en"		"say war3rank"
+		"en"		"say wcsrank"
 	}
 	"HelpMenu12desc"
 	{
@@ -764,7 +768,7 @@
 	}
 	"HelpMenu13"
 	{
-		"en"		"say war3dev"
+		"en"		"say wcsdev"
 	}
 	"HelpMenu13desc"
 	{
@@ -796,7 +800,7 @@
 	}
 	"HelpMenu17"
 	{
-		"en"		"war3admin"
+		"en"		"wcsadmin"
 	}
 	"HelpMenu17desc"
 	{
@@ -813,7 +817,7 @@
 	//War3Source_Engine_MenuChangerace.sp
 	"[War3Source] Select your desired race"
 	{
-		"en"		"[War3Source] Select your desired race"
+		"en"		"[-WCS-] Select your desired race"
 	}
 	"You Have {amount} levels in levelbank. Say levelbank to use it"
 	{
@@ -833,7 +837,7 @@
 	"reqlvl {amount}"
 	{
 		"#format"	"{1:d}"
-		"en"		"ReqLvl {1}"
+		"en"		"- [LVL {1}]"
 	}
 	"Your XP Has not been fully loaded yet"
 	{
@@ -873,34 +877,34 @@
 	"You are already {racename}"
 	{
 		"#format"	"{1:s}"
-		"en"		"You are already {1}"
+		"en"		"You are already {green}{1}"
 	}
 	"You will be {racename} after death or spawn"
 	{
 		"#format"	"{1:s}"
-		"en"		"You will be {1} after death or spawn"
+		"en"		"After death or spawn you will be {green}{1}"
 	}
 
 	//War3Source_Engine_MenuItemsinfo.sp
 	"[War3Source] Shopmenu items"
 	{
-		"en"		"[War3Source] Shopmenu items."
+		"en"		"[-WCS-] Shopmenu items."
 	}
 	"[War3Source] Item: {item} (identifier: {id})"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"[War3Source] Item: {1} (identifier: {2})"
+		"en"		"[-WCS-] Item: {1} (identifier: {2})"
 	}
 
 	//War3Source_Engine_MenuRacePlayerinfo.sp
 	"[War3Source] Select a race for more info"
 	{
-		"en"		"[War3Source] Select a race for more info."
+		"en"		"[-WCS-] Select a race for more info."
 	}
 	"[War3Source] Information for race: {racename} (LVL {amount}/{amount})"
 	{
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"[War3Source] Information for race: {1} (LVL {2}/{3})"
+		"en"		"[-WCS-] Information for race: {1} (LVL {2}/{3})"
 	}
 	"{skillname} (LVL {amount}/{amount})"
 	{
@@ -924,7 +928,7 @@
 	"[War3Source] People who are race: {racename}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] People who are race: {1}"
+		"en"		"[-WCS-] People who are race: {1}"
 	}
 	"{player} (Level {amount}) [{team}]"
 	{
@@ -945,7 +949,7 @@
 	}
 	"[War3Source] Select a player to view its information"
 	{
-		"en"		"[War3Source] Select a player to view its information";
+		"en"		"[-WCS-] Select a player to view its information";
 	}
 	"{player} ({racename} LVL {amount})"
 	{
@@ -960,7 +964,7 @@
 	"[War3Source] Information for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Information for {1}";
+		"en"		"[-WCS-] Information for {1}";
 	}
 	"Total levels: {amount}"
 	{
@@ -1017,7 +1021,7 @@
 	"[War3Source] Select your desired skill. ({amount}/{amount})"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[War3Source] Select your desired skill. ({1}/{2})"
+		"en"		"[-WCS-] Select your desired skill. ({1}/{2})"
 	}
 	"{skillname} (Skill Level {amount})"
 	{
@@ -1037,7 +1041,7 @@
 	"{skillname} is now level {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"\"{1}\" is now level {2}."
+		"en"		"\"{green}{1}{default}\" is now level {green}{2}{default}."
 	}
 	"You can not choose a skill without gaining another level"
 	{
@@ -1046,53 +1050,57 @@
 	"You need to be at least level {amount} to choose an ultimate"
 	{
 		"#format"	"{1:d}"
-		"en"		"You need to be at least level {1} to choose an ultimate."
+		"en"		"You need to be at least level {green}{1}{default} to choose an ultimate."
 	}
 
 	//War3Source_Engine_MenuWar3Menu.sp
 	"[War3Source] Choose a task"
 	{
-		"en"		"[War3Source] Choose a task."
+		"en"		"- WCSmenu: -"
 	}
 	"War3Menu_Item0"
 	{
-		"en"		"View War3Source command list"
+		"en"		"shopmenu  - buy shop items"
 	}
 	"War3Menu_Item1"
 	{
-		"en"		"Change my race"
+		"en"		"shopinfo  - show item info"
 	}
 	"War3Menu_Item2"
 	{
-		"en"		"What are my skills and their levels?"
+		"en"		"showskills  - show all skills levels"
 	}
 	"War3Menu_Item3"
 	{
-		"en"		"What are all the races?"
+		"en"		"resetskills  - reset your skills"
 	}
 	"War3Menu_Item4"
 	{
-		"en"		"See another player's information"
+		"en"		"spendskills  - spend skill points"
 	}
 	"War3Menu_Item5"
 	{
-		"en"		"Reset my skills"
+		"en"		"changerace  - choose your race"
 	}
 	"War3Menu_Item6"
 	{
-		"en"		"Spend unused skill points"
+		"en"		"raceinfo  - show info about races "
 	}	
 	"War3Menu_Item7"
 	{
-		"en"		"Bring up the shopmenu"
+		"en"		"playerinfo  - shows info about a player"
 	}
 	"War3Menu_Item8"
 	{
-		"en"		"What do the shopmenu items do?"
+		"en"		"wcscommands  - view my commands"
 	}
 	"War3Menu_Item9"
 	{
-		"en"		"See my levelbank"
+		"en"		"levelbank  - see your levelbank"
+	}
+	"War3Menu_Item10"
+	{
+		"en"		"shopmenu2  - buy items with diamonds"
 	}
 
 	//War3Source_Engine_PlayerClass.sp
@@ -1103,7 +1111,7 @@
 	}
 	"say war3bug <description> to file a bug report"
 	{
-		"en"		"say war3bug <description> to file a bug report"
+		"en"		"Welcome to Warcraft server. Type {green}wcs{default} for help"
 	}
 	"Your skills will be reset when you die"
 	{
@@ -1121,11 +1129,11 @@
 	}
 	"Please download @ www.war3source.com"
 	{
-		"en"		"Server Owner please update. www.war3source.com"
+		"en"		"Server Owner please update Warcraft Mod"
 	}
 	"Report a war3source bug: say war3bug <detailed description>"
 	{
-		"en"		"Report a war3source bug: say war3bug <detailed description>"
+		"en"		"Say {green}wcs{default} to open wcsmenu"
 	}
 	"You cannot use war3bug again so soon"
 	{
@@ -1159,12 +1167,12 @@
 	}
 	"+50 HP"
 	{
-		"en"		"+50 HP"
+		"en"		"{green}+50 HP{default}"
 	}
 	"+{amount} XP"
 	{
 		"#format"	"{1:d}"
-		"en"		"+{1} XP"
+		"en"		"{green}+{1} XP{default}"
 	}
 	"You will be respawned"
 	{
@@ -1206,7 +1214,7 @@
 	"+{amount} Claws Damage"
 	{
 		"#format"	"{1:d}"
-		"en"		"+{1} Claws Damage"
+		"en"		"{green}+{1}{default} Claws Damage"
 	}
 	"ORB OF FROST!"
 	{
@@ -1219,7 +1227,7 @@
 	"+{amount} Mask leeched HP"
 	{
 		"#format"	"{1:d}"
-		"en"		"+{1} Mask leeched HP"
+		"en"		"{green}+{1}{default} Mask leeched HP"
 	}
 	"REGAINED SPEED from frost"
 	{
@@ -1236,16 +1244,16 @@
 	"WelcomeToServer"
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
-		"en"		"Welcome to {1} War3Source server!\nYou get XP and gold for kills and objectives.\nEach level gained, you may choose a skill to level up.\n \nVisit the mod website @ www.war3source.com\nBranch: {2} - Build: {3}."
+		"en"		"Welcome to Warcraft server!\nYou get XP and gold for kills and objectives.\nEach level gained, you may choose a skill to level up."
 	}
 	"WelcomeToServerMaster"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"Welcome to {1} War3Source server!\nYou get XP and gold for kills and objectives.\nEach level gained, you may choose a skill to level up.\n \nVisit the mod website @ www.war3source.com\nBuild: {2}."
+		"en"		"Welcome to Warcraft server!\nYou get XP and gold for kills and objectives.\nEach level gained, you may choose a skill to level up."
 	}
 	"ForHelpIntro"
 	{
-		"en"		"For help, say war3menu"
+		"en"		"For help, say WCS"
 	}
 	"Please be patient while we load your XP"
 	{
@@ -1256,7 +1264,7 @@
 	"{race} race team limit has reached (MAX {amount}), please select a different race"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"{1} race team limit has reached (MAX {2}), please select a different race."
+		"en"		"{green}{1}{default} race team limit has reached (MAX {2}), please select a different race."
 	}
 
 	//W3SIncs/War3Source_Interface.inc
@@ -1270,27 +1278,27 @@
 	}
 	"You are stunned, cannot activate skill"
 	{
-		"en"		"[W3S] You are stunned, cannot activate skill"
+		"en"		"You are stunned, cannot activate skill"
 	}
 	"You are silenced, cannot activate skill"
 	{
-		"en"		"[W3S] You are silenced, cannot activate skill"
+		"en"		"You are silenced, cannot activate skill"
 	}
 	"You are stunned, cannot proc skill"
 	{
-		"en"		"[W3S] You are stunned, cannot proc skill"
+		"en"		"You are stunned, cannot proc skill"
 	}
 	"You are hexed, cannot proc skill"
 	{
-		"en"		"[W3S] You are hexed, cannot proc skill"
+		"en"		"You are hexed, cannot proc skill"
 	}
 	"You are stunned, cannot activate item"
 	{
-		"en"		"[W3S] You are stunned, cannot activate item"
+		"en"		"You are stunned, cannot activate item"
 	}
 	"You are perplexed, cannot activate item"
 	{
-		"en"		"[W3S] You are perplexed, cannot activate item"
+		"en"		"You are perplexed, cannot activate item"
 	}
 	"Select a race first!"
 	{
@@ -1327,12 +1335,12 @@
 	"[W3S] You did +{amount} damage to {player} with {skill}"
 	{
 		"#format"	"{1:d},{2:s},{3:s}"
-		"en"		"[W3S] You did +{1} damage to {2} with {3}"
+		"en"		"You did +{1} damage to {2} with {3}"
 	}
 	"[W3S] {player} did {amount} damage to you with {skill}"
 	{
 		"#format"	"{1:s},{2:d},{3:s}"
-		"en"		"[W3S] {1} did {2} damage to you with {3}"
+		"en"		"{1} did {2} damage to you with {3}"
 	}
 	"+{amount} damage with {skill}"
 	{
@@ -1480,7 +1488,7 @@
 	}
 	"[W3S] Enemy has immunity!"
 	{
-		"en"		"[W3S] Enemy has immunity!"
+		"en"		"Enemy has immunity!"
 	}
 	"This ultimate is not activatable"
 	{
@@ -1496,7 +1504,7 @@
 	}
 	"Attacked by Fan of Knives"
 	{
-		"en"		"Attacked by Fan of Knives"
+		"en"		"Attacked by Fan Of Knives"
 	}
 	"Activated {skillname}"
 	{
@@ -1528,6 +1536,6 @@
 	}
 	"[War3Source] Select a category"
 	{
-		"en"		"[War3Source] Select a category"
+		"en"		"[-WCS-] Select a category"
 	}
 }

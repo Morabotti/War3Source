@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"m249_temName"
+	{
+		"en"		"Weapon M249"
+	}
+	"m249_temDesc"
+	{
+		"en"		"Gives M249"
+	}
+}

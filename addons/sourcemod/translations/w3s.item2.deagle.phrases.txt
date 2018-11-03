@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"deagle_temName"
+	{
+		"en"		"Weapon DEAGLE"
+	}
+	"deagle_temDesc"
+	{
+		"en"		"Gives DEAGLE"
+	}
+}

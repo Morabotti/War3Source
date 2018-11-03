@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"g3sg1_temName"
+	{
+		"en"		"Weapon G3SG1"
+	}
+	"g3sg1_temDesc"
+	{
+		"en"		"Gives G3SG1"
+	}
+}

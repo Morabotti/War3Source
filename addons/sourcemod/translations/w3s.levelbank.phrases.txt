@@ -28,6 +28,6 @@
 	"You have {amount} levels in your levelbank, say levelbank to use them"
 	{
 		"#format"	"{1:d}"
-		"en"		"You have {1} levels in your levelbank, say levelbank to use them"
+		"en"		"You have {green}{1}{default} levels in your levelbank, say levelbank to use them"
 	}
 }

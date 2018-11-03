@@ -1,0 +1,254 @@
+"Phrases"
+{
+	"Guns Menu"
+	{
+		"br"	"Digite {green}guns{default} para abrir o menu de armas."
+		"en"	"Type {green}guns{default} to open the weapons menu."
+		"es"	"Escriba {green}guns{default} para abrir el menú de armas."
+		"fr"	"Tapez {green}guns{default} pour ouvrir le menu des armes."
+		"pl"	"Napisz {green}guns{default} aby otworzyć menu broni."
+	}
+
+	"Guns Disabled"
+	{
+		"br"	"O menu de armas foi {red}desativado{default}."
+		"en"	"The guns menu has been {red}disabled{default}."
+		"es"	"El menú de armas se ha {red}desactivado{default}."
+		"fr"	"Le menu des armes a été {red}désactivé{default}."
+		"pl"	"Menu broni zostało {red}wyłączone{default}."
+	}
+
+	"Guns New Spawn"
+	{
+		"br"	"Voce recebera a {green}nova{default} arma no próximo spawn."
+		"en"	"You will be given {green}new{default} weapons on next spawn."
+		"es"	"Se le dará {green}nuevas{default} armas en el próximo desove."
+		"fr"	"Vous recevrez de {green}nouvelles{default} armes sur le prochain spawn."
+		"pl"	"Zostaną dodane {green}nowe{default} bronie po respawnie."
+	}
+
+	"Guns Same Spawn"
+	{
+		"br"	"Você recebera as {green}mesmas{default} armas nos próximos spawns"
+		"en"	"You will be given {green}same{default} weapons on next spawn."
+		"es"	"Se le dará {green}mismas{default} armas en el próximo desove."
+		"fr"	"Vous recevrez {green}mêmes{default} armes sur le prochain spawn."
+		"pl"	"Zostaną dodane {green}te same{default} bronie po respawnie."
+	}
+
+	"Guns Random Spawn"
+	{
+		"br"	"Você recebera armas {green}aleatórias{default} nos próximos spawns"
+		"en"	"You will be given {green}random{default} weapons on next spawn."
+		"es"	"Se le dará armas {green}al azar{default} en el próximo desove."
+		"fr"	"Vous recevrez armes {green}aléatoires{default} sur le prochain spawn."
+		"pl"	"Zostaną dodane {green}losowe{default} bronie po respawnie."
+	}
+
+	"Panel Health Remaining"
+	{
+		"br"	"Vida Restante:"
+		"en"	"Health Remaining:"
+		"es"	"Salud restante:"
+		"fr"	"Restant Santé:"
+		"pl"	"Pozostałe zdrowie:"
+	}
+
+	"Panel Damage Giver"
+	{
+		"br"	"Você fez"
+		"en"	"You did"
+		"es"	"Lo hiciste"
+		"fr"	"Vous avez"
+		"pl"	"Zadałeś"
+	}
+
+	"Panel Damage Taker"
+	{
+		"br"	"danos ao"
+		"en"	"damage to"
+		"es"	"daño a"
+		"fr"	"dommages à"
+		"pl"	"obrażeń graczowi"
+	}
+
+	"Panel Kill Confirmed"
+	{
+		"br"	"Você matou."
+		"en"	"You killed him."
+		"es"	"Usted lo mató."
+		"fr"	"Vous l'avez tué."
+		"pl"	"Zabiłeś go."
+	}
+
+	"HP Knife Kill"
+	{
+		"br"	"Por matar um inimigo com a ({green}faca{default})."
+		"en"	"for killing an enemy ({green}knife{default})."
+		"es"	"por matar a un enemigo ({green}cuchillo{default})."
+		"fr"	"pour avoir frag ({green}couteau{default})."
+		"pl"	"za zabicie przeciwnika ({green}nożem{default})."
+	}
+
+	"HP Headshot Kill"
+	{
+		"br"	"Por matar um inimigo de ({green}headshot{default})."
+		"en"	"for killing an enemy ({green}headshot{default})."
+		"es"	"por matar a un enemigo ({green}disparo a la cabeza{default})."
+		"fr"	"pour avoir frag ({green}à la tête{default})."
+		"pl"	"za zabicie przeciwnika ({green}headshotem{default})."
+	}
+
+	"HP Nade Kill"
+	{
+		"br"	"Por matar um inimigo na ({green}granada{default})."
+		"en"	"for killing an enemy ({green}grenade{default})."
+		"es"	"por matar a un enemigo ({green}granada{default})."
+		"fr"	"pour avoir frag ({green}grenade{default})."
+		"pl"	"za zabicie przeciwnika ({green}granatem{default})."
+	}
+
+	"HP Kill"
+	{
+		"br"	"Por matar um inimigo."
+		"en"	"for killing an enemy."
+		"es"	"por matar a un enemigo."
+		"fr"	"pour avoir frag."
+		"pl"	"za zabicie przeciwnika."
+	}
+
+	"AP Knife Kill"
+	{
+		"br"	"Por matar um inimigo com a ({green}faca{default})."
+		"en"	"for killing an enemy ({green}knife{default})."
+		"es"	"por matar a un enemigo ({green}cuchillo{default})."
+		"fr"	"pour avoir frag ({green}couteau{default})."
+		"pl"	"za zabicie przeciwnika ({green}nożem{default})."
+	}
+
+	"AP Headshot Kill"
+	{
+		"br"	"Por matar um inimigo de ({green}headshot{default})."
+		"en"	"for killing an enemy ({green}headshot{default})."
+		"es"	"por matar a un enemigo ({green}disparo a la cabeza{default})."
+		"fr"	"pour avoir frag ({green}à la tête{default})."
+		"pl"	"za zabicie przeciwnika ({green}headshotem{default})."
+	}
+
+	"AP Nade Kill"
+	{
+		"br"	"Por matar um inimigo na ({green}granada{default})."
+		"en"	"for killing an enemy ({green}grenade{default})."
+		"es"	"por matar a un enemigo ({green}granada{default})."
+		"fr"	"pour avoir frag ({green}grenade{default})."
+		"pl"	"za zabicie przeciwnika ({green}granatem{default})."
+	}
+
+	"AP Kill"
+	{
+		"br"	"Por matar um inimigo."
+		"en"	"for killing an enemy."
+		"es"	"por matar a un enemigo."
+		"fr"	"pour avoir frag."
+		"pl"	"za zabicie przeciwnika."
+	}
+
+	"Spawn Editor Enabled"
+	{
+		"br"	"Edit mode {green}ativado{default}."
+		"en"	"Edit mode {green}enabled{default}."
+		"es"	"El modo de edición {green}activado{default}."
+		"fr"	"Modifier le mode {green}activé{default}."
+		"pl"	"Tryb edycji {green}włączony{default}."
+	}
+
+	"Spawn Editor Disabled"
+	{
+		"br"	"Edit mode {red}desativado{default}."
+		"en"	"Edit mode {red}disabled{default}."
+		"es"	"El modo de edición {red}deshabilitado{default}."
+		"fr"	"Modifier le mode {red}désactivé{default}."
+		"pl"	"Tryb edycji {red}wyłączony{default}."
+	}
+
+	"Spawn Editor Teleported"
+	{
+		"br"	"Teleportado para spawn point"
+		"en"	"Teleported to spawn point"
+		"es"	"Teletransportado a desovar puntos"
+		"fr"	"Téléporté pour frayer le point"
+		"pl"	"Przeteleportowany do punktu respawnu"
+	}
+
+	"Spawn Editor No Spawn"
+	{
+		"br"	"Não há pontos de spawn."
+		"en"	"There are no spawn points."
+		"es"	"No hay puntos de regeneración."
+		"fr"	"Il n'y a pas de points de spawn."
+		"pl"	"Brak punktów respawnu."
+	}
+
+	"Spawn Editor Deleted Spawn"
+	{
+		"br"	"Ponto de spwan deletado."
+		"en"	"Deleted spawn point"
+		"es"	"Punto de desovar eliminados"
+		"fr"	"Point de spawn supprimé"
+		"pl"	"Usunięto punkt respawnu"
+	}
+
+	"Spawn Editor Deleted All"
+	{
+		"br"	"Todos os pontos de spwan deletados."
+		"en"	"All spawn points have been deleted."
+		"es"	"Se han eliminado todos los puntos de regeneración."
+		"fr"	"Tous les points spawn ont été supprimés."
+		"pl"	"Wszystkie punkty respawnu zostały usunięte."
+	}
+
+	"Spawn Editor Spawn Added"
+	{
+		"br"	"Adicionado ponto de spawn"
+		"en"	"Added spawn point"
+		"es"	"Punto de desovar añadido"
+		"fr"	"Point de spawn Ajouté"
+		"pl"	"Dodano punkt respawnu"
+	}
+
+	"Spawn Editor Spawn Not Added"
+	{
+		"br"	"Não foi possível adicionar ponto de spawn (limite máximo alcançado)."
+		"en"	"Could not add spawn point (max limit reached)."
+		"es"	"No se pudo añadir punto de desovar (límite máximo alcanzado)."
+		"fr"	"Impossible d'ajouter le point spawn (limite maximale atteinte)."
+		"pl"	"Nie można dodać punktu respawnu (maksymalny limit osiągnięty)."
+	}
+
+	"Spawn Editor Spawn Inserted"
+	{
+		"br"	"Ponto de spawn inserido no"
+		"en"	"Inserted spawn point at"
+		"es"	"Punto de desovar Insertado en"
+		"fr"	"Point de spawn inséré à"
+		"pl"	"Ustawiono punkt respawnu na"
+	}
+
+	"Spawn Editor Config Saved"
+	{
+		"br"	"A configuração foi salva."
+		"en"	"Configuration has been saved."
+		"es"	"La configuración se ha guardado."
+		"fr"	"Configuration a été enregistrée."
+		"pl"	"Konfiguracja została zapisana."
+	}
+
+	"Spawn Editor Config Not Saved"
+	{
+		"br"	"Configuração não pôde ser salva."
+		"en"	"Configuration could not be saved."
+		"es"	"La configuración no ha podido guardar."
+		"fr"	"Configuration n'a pas pu être sauvé."
+		"pl"	"Konfigurcja nie może zostać zapisana"
+	}
+}

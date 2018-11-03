@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"famas_temName"
+	{
+		"en"		"Weapon FAMAS"
+	}
+	"famas_temDesc"
+	{
+		"en"		"Gives FAMAS"
+	}
+}

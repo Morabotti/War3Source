@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"nades_temName"
+	{
+		"en"		"All Nades"
+	}
+	"nades_temDesc"
+	{
+		"en"		"Gives you all nades"
+	}
+}

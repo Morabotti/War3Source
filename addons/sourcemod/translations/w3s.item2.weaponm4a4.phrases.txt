@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"weaponm4a4_temName"
+	{
+		"en"		"Weapon M4A4"
+	}
+	"weaponm4a4_temDesc"
+	{
+		"en"		"Gives M4A4"
+	}
+}

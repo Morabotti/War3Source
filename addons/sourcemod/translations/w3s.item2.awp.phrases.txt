@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"awp_temName"
+	{
+		"en"		"Weapon AWP"
+	}
+	"awp_temDesc"
+	{
+		"en"		"Gives AWP"
+	}
+}

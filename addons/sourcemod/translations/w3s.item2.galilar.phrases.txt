@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"galilar_temName"
+	{
+		"en"		"Weapon GALIL"
+	}
+	"galilar_temDesc"
+	{
+		"en"		"Gives GALIL"
+	}
+}

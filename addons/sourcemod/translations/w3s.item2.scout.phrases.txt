@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"scout_temName"
+	{
+		"en"		"Weapon SCOUT (SSG08)"
+	}
+	"scout_temDesc"
+	{
+		"en"		"Gives SCOUT (SSG08)"
+	}
+}

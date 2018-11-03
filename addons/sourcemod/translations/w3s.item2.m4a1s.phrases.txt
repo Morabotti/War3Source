@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"m4a1s_temName"
+	{
+		"en"		"Weapon M4A1-Silencer"
+	}
+	"m4a1s_temDesc"
+	{
+		"en"		"Gives M4A1-Silencer"
+	}
+}

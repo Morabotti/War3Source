@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"p90_temName"
+	{
+		"en"		"Weapon P90"
+	}
+	"p90_temDesc"
+	{
+		"en"		"Gives P90"
+	}
+}

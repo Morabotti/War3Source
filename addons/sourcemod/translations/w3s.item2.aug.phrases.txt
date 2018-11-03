@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"aug_temName"
+	{
+		"en"		"Weapon AUG"
+	}
+	"aug_temDesc"
+	{
+		"en"		"Gives AUG"
+	}
+}

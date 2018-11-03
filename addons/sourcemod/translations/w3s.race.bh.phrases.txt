@@ -55,6 +55,6 @@
 	}
 	"Double Damage against low HP enemies!"
 	{
-		"en"		"[W3S] Double Damage against low HP enemies!"
+		"en"		"Double Damage against low HP enemies!"
 	}
 }

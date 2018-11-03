@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"sg556_temName"
+	{
+		"en"		"Weapon SG556"
+	}
+	"sg556_temDesc"
+	{
+		"en"		"Gives SG556"
+	}
+}

@@ -10,7 +10,7 @@
 // Maximum: "1.0"
 
 //war3_bots_scramble_announce => "Announce the scrambling?"
-// Default: "1.0"
+// Default: "0.0"
 // Minimum: "0.0"
 // Maximum: "1.0"
 
@@ -34,10 +34,3 @@
 // Minimum: "0.0"
 // Maximum: "100.0"
 
-"Phrases"
-{
-	"The bots races and levels have been scrambled."
-	{
-		"en"	"The bots races and levels have been scrambled."
-	}
-}

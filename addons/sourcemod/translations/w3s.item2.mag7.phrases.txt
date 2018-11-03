@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"mag7_temName"
+	{
+		"en"		"Weapon MAG7"
+	}
+	"mag7_temDesc"
+	{
+		"en"		"Gives MAG7"
+	}
+}

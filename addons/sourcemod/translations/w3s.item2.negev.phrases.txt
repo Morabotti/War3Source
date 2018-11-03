@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"negev_temName"
+	{
+		"en"		"Weapon NEGEV"
+	}
+	"negev_temDesc"
+	{
+		"en"		"Gives NEGEV"
+	}
+}

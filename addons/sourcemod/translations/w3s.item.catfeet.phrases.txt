@@ -1,0 +1,27 @@
+"Phrases"
+
+{
+
+	"catfeet_ItemName"
+
+	{
+
+		"en"		"Cat's Feet"
+
+	}
+
+
+	"catfeet_ItemDesc"
+
+	{
+
+		"en"		"Silence your footsteps while running"
+
+	}
+
+	"your_footsteps"
+	{
+		"en"		"Your footsteps are silent."
+	}
+
+}

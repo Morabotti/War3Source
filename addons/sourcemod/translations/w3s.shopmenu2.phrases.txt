@@ -5,7 +5,7 @@
 	"[War3Source] Select an item to buy. You have {amount}/{amount} items"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[War3Source] Select an item to buy. You have {1}/{2} items"
+		"en"		"[Shopmenu2] Select an item to buy. You have {1}/{2} items"
 	}
 	"You have {amount} Diamonds"
 	{
@@ -40,7 +40,7 @@
 	"You may not purchase {itemname} when you are {racename}"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"You may not purchase {1} when you are {2}."
+		"en"		"You may not purchase {green}{1}{default} when you are {green}{2}{default}."
 	}
 	"You already own {itemname}"
 	{
@@ -50,7 +50,7 @@
 	"You cannot afford {itemname}"
 	{
 		"#format"	"{1:s}"
-		"en"		"You cannot afford {1}."
+		"en"		"You cannot afford {green}{1}{default}."
 	}
 	"You have successfully purchased {itemname}"
 	{
@@ -60,6 +60,6 @@
 	"[War3Source] You already have a max of {amount} items. Choose an item to replace with {itemname}. You will not get Diamonds back"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You already have a max of {1} items.\nChoose an item to replace with {2}.\nYou will not get Diamonds back."
+		"en"		"[Shopmenu2] You already have a max of {1} items.\nChoose an item to replace with {2}.\nYou will not get Diamonds back."
 	}
 }
